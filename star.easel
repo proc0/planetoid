@@ -1,8 +1,8 @@
-pub fn star.Star(radius=1) {
+pub fn star.Star(radius=1, pos=@(Random * BoundaryRadius * PickRandom([1,-1]), Random * BoundaryRadius * PickRandom([1,-1]))) {
     use body=star
 
     Body(
-        pos=@(Random * BoundaryRadius * PickRandom([1,-1]), Random * BoundaryRadius * PickRandom([1,-1])),
+        pos=,
         velocity=@(0,1),
     )
     

@@ -1,3 +1,4 @@
+pub collect ship.NumPlasmaBolts = 1
 signal ship.ReadyToPlay
 
 pub const SHIP_ACCEL = 3
@@ -10,6 +11,8 @@ pub fn ship.Ship([owner]) {
     Body(pos = BoundaryRadius * Random * RandomVector)
 
     ImageSprite(@ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
+    // PolygonSprite(shape=Circle, color=#0000ff)
+    PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
     TextSprite(
         owner.PlayerName,
@@ -19,11 +22,10 @@ pub fn ship.Ship([owner]) {
 
     PointerAimingLine(body=ship, color=#888888, opacity=0.1, radius=0.5, layer=-20)
     
-    PolygonCollider(shape=Circle, category=Category:Ship, density=1)
     LimitSpeed(maxSpeed=30)
     DecayTurnRate
+    CollideBoundary
     WrapOutsideBoundary
-
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
         ReadyToPlay
@@ -71,7 +73,6 @@ pub fn ship.Ship([owner]) {
         }
 
         behavior<strafeLeftSparks> on Paint {
-            ConsoleLog(Heading)
             if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
                 Spark(
                     color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
@@ -175,7 +176,7 @@ pub fn ship.Ship([owner]) {
     delete PolygonSprite<initialShield>
     
     on BeforeCollide that {
-        if that.Category.Overlaps(Category:Asteroid) {
+        if that.Category.Overlaps(Category:Asteroid | Category:Alien | Category:Explosion) {
             repeat 5 {
                 Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
             }
@@ -197,8 +198,12 @@ pub fn ship.Ship([owner]) {
 
         behavior<shootBullet> {
             loop {
-                Spawn projectile {
-                    PlasmaBolt(ship=)
+                const anglePerBolt = 0.03rev
+                let initialAngle = -(anglePerBolt * (NumPlasmaBolts - 1)) / 2
+                for i in Range(0, NumPlasmaBolts) {                
+                    Spawn projectile {
+                        PlasmaBolt(ship=, headingOffset = initialAngle + i*anglePerBolt)
+                    }
                 }
                 await Tick(0.3s)
             }

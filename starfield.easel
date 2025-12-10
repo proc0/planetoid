@@ -11,4 +11,10 @@ pub fn starfield.Starfield {
         }
     }
 
+    with Tick(3s) {
+        Spawn star {
+            Star(pos=@(Random * BoundaryRadius * PickRandom([1,-1]), -BoundaryRadius-1))
+        }
+    }
+
 }

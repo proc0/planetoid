@@ -1,0 +1,65 @@
+prop ship.Health
+
+pub fn ship.Alien {
+    use body=ship
+    use radius=2, speed=8, turnRate=0.05rev
+    use maxHealth=5
+
+    Health = maxHealth
+    Body(
+        pos=(BoundaryRadius + radius + 5) * RandomVector,
+        velocity=speed*RandomVector,
+        turnRate=
+    )
+
+    PolygonSprite(shape=Circle, color=#ccffcc, overlay=1)
+    PolygonCollider(shape=Circle, category=Category:Alien, density=1)
+    RecoverSpeed
+    RecoverTurnRate
+    WrapOutsideBoundary
+    DespawnOutsideVerticalBoundary
+
+    with Health {
+        let proportion = Health / maxHealth
+        let color = proportion.BlendHue(#ff6600, #66ff00)
+        PolygonSprite(shape=Circle, color=, overlay=1)
+    }
+    
+    once BeforeDespawn {
+        repeat 5 {
+            Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75, splatter=1, speed=10)
+        }
+    }
+
+    on BeforeCollide that {
+        if that.Category.Overlaps(Category:Projectile) {
+            Health -= 1
+            if Health <= 0 {
+                Expire
+                break
+            }
+        }
+
+        if that.Category.Overlaps(Category:Asteroid) {
+            Health -= 3
+            if Health <= 0 {
+                Expire
+                break
+            }
+        }
+    }
+
+    on Tick(4s) {
+        Velocity = Speed * RandomVector
+    }
+
+    on Tick(2s) {
+        let hero = QueryNearest(filter=Category:Ship)
+        if hero {
+            Spawn projectile {
+                EnergonBoom(ship=, target=hero.Pos)
+            }
+        }
+    }
+    
+}

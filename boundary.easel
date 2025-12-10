@@ -1,4 +1,4 @@
-pub const BoundaryRadius = 50
+pub const BoundaryRadius = 40
 pub const BoundaryWidth = BoundaryRadius*2
 
 pub fn this.WrapOutsideBoundary([body, radius]) {
@@ -10,9 +10,9 @@ pub fn this.WrapOutsideBoundary([body, radius]) {
             x = -x
         }
 
-        if body.Pos.Y.Abs > radius + BoundaryRadius && body.Velocity.Y.Sign == body.Pos.Y.Sign {
-            y = -y
-        }
+        // if body.Pos.Y.Abs > radius + BoundaryRadius && body.Velocity.Y.Sign == body.Pos.Y.Sign {
+        //     y = -y
+        // }
 
         Pos = @(x, y)
     }
@@ -26,6 +26,29 @@ pub fn this.DespawnOutsideBoundary([body, radius]) {
 
         if body.Pos.Y + radius > BoundaryRadius {
             body.Expire
+        }
+    }
+}
+
+pub fn this.DespawnOutsideVerticalBoundary([body, radius]) {
+    on BeforePhysics {
+        if body.Pos.Y + radius > BoundaryRadius {
+            body.Expire
+        }
+    }
+}
+
+pub fn this.CollideBoundary([body, radius]) {
+    on BeforePhysics {
+        // bounce back 
+        if body.Pos.Y.Abs > BoundaryRadius {
+            // 6 is scale of the image sprite(3) * 2 (collision is 1)
+            let offset = body.Pos.Y.Sign == 1 ? -6 : 6
+            body.Pos = @(body.Pos.X, body.Pos.Y + offset)
+        }
+        // slow down verticle movement
+        if body.Pos.Y.Abs + 3 > BoundaryRadius {
+            body.ApplyImpulse(@(0, body.Velocity.Y*-3))
         }
     }
 }

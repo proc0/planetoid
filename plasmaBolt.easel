@@ -1,4 +1,4 @@
-pub fn projectile.PlasmaBolt(ship, [owner]) {
+pub fn projectile.PlasmaBolt(ship, headingOffset=0, [owner]) {
     use body=projectile
     use speed=50, radius=0.25
     use color=#ffffff, ownerColor=true
@@ -6,7 +6,7 @@ pub fn projectile.PlasmaBolt(ship, [owner]) {
 
     Body(
         pos=ship.Pos,
-        velocity = speed * Direction(ship.Heading) * 2,
+        velocity = speed * Direction(ship.Heading + headingOffset) * 2,
         bullet=true,
     )
     PolygonCollider(shape=Circle, category=Category:Projectile, parent=ship)
@@ -19,7 +19,7 @@ pub fn projectile.PlasmaBolt(ship, [owner]) {
         Strobe(shine=1, dissipate=0.5s)
         repeat 5 { Spark(shine=0.5, splatter=1, dissipate=0.5s) }
 
-        if that.Category.Overlaps(Category:Asteroid) {
+        if that.Category.Overlaps(Category:Asteroid | Category:Alien) {
             Score += 10
         }
         
