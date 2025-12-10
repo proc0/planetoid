@@ -1,12 +1,7 @@
-# Example Easel project
+# Planetoid
 
-You are now looking at the source code for the example Easel project,
-found on the homepage at https://easel.games.
-Go to `main.easel` to see the main game code.
+Shoot your way through the asteroid belt and defeat enemies.
 
-# About Easel
+# Requirements
 
-Easel is a 2D game programming language. Code multiplayer games without coding the multiplayer.
-Whether you are a beginner or expert coder, you'll love making games with Easel!
-
-Learn more about Easel: https://easel.games
+Easel: https://easel.games
