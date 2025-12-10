@@ -1,0 +1,14 @@
+pub fn starfield.Starfield {
+    use body=starfield
+
+    Body(
+        pos=@(0,0),
+    )
+
+    repeat 15 {
+        Spawn star {
+            Star
+        }
+    }
+
+}

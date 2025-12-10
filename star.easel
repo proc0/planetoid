@@ -1,0 +1,14 @@
+pub fn star.Star(radius=1) {
+    use body=star
+
+    Body(
+        pos=@(Random * BoundaryRadius * PickRandom([1,-1]), Random * BoundaryRadius * PickRandom([1,-1])),
+        velocity=@(0,1),
+    )
+    
+    on Paint {
+        Spark(color=#222222, luminous=1.5, layer=-40, radius=Random*Random)
+    }
+
+    WrapOutsideBoundary
+}

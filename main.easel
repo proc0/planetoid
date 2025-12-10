@@ -1,0 +1,51 @@
+pub prop owner.Score = 0
+
+pub game fn World.Main(maxHumanPlayers=5) {
+    SolidBackground(color=#000000)
+    Camera(@(0,0), radius=BoundaryRadius)
+    Viewport(aspectRatio=1)
+    
+    SpawnEachPlayer owner {
+        Subspawn ship {
+            Ship
+
+            once BeforeDespawn {
+                Eliminate
+            }
+        }
+
+        TopContent {
+            with Score {
+                HStack(width=BoundaryWidth, hPadding=8) {
+                    H1(align=Align:Left) { %(Score) }
+                }
+            }
+        }
+        
+        once AfterEliminated {
+            OverlayContent {
+                VStack(align=Align:Center) {
+                    Standout(fontSize=5) { FlyInWords("Game Over") }
+
+                    HStack(animate=Animate:FlyFromBottom, align=Align:Center) {
+                        RaisedButton(Main, backgroundColor=Color:Primary) { "Play Again" }
+                    }
+                }
+            }
+        }
+    }
+
+    Spawn starfield {
+        Starfield
+    }
+    with Tick(2s) {
+        const MaxAsteroids = 15
+        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
+            Spawn asteroid {
+                Asteroid
+            }
+        }
+    }
+    
+    ButtonRemap(Tap, Click)
+}

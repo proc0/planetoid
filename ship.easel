@@ -1,0 +1,219 @@
+signal ship.ReadyToPlay
+
+pub const SHIP_ACCEL = 3
+pub const RIGHT_ANGLE = Pi/2
+
+pub fn ship.Ship([owner]) {
+    use body=ship
+    use radius=1
+
+    Body(pos = BoundaryRadius * Random * RandomVector)
+
+    ImageSprite(@ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
+    
+    TextSprite(
+        owner.PlayerName,
+        noRotation=true, screenOffset=@(0, 3.5), layer=-15,
+        ownerColor=true, opacity=0.5, strobe=false,
+        heightPx=22, anchorTop=true, luminous=1)
+
+    PointerAimingLine(body=ship, color=#888888, opacity=0.1, radius=0.5, layer=-20)
+    
+    PolygonCollider(shape=Circle, category=Category:Ship, density=1)
+    LimitSpeed(maxSpeed=30)
+    DecayTurnRate
+    WrapOutsideBoundary
+
+    
+    on ButtonDown(ArrowUp), ButtonDown(KeyW) {
+        ReadyToPlay
+        
+        behavior<thrust> on BeforePhysics {
+            if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
+                ApplyImpulse(SHIP_ACCEL*3 * @(0, -1))
+            } else {
+                ApplyImpulse(SHIP_ACCEL * @(0, -1))
+            }
+        }
+
+        behavior<thrustSparks> on Paint {
+            if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
+                Spark(
+                    color=#0011ff, bodyOffset=@(-2,0), dissipate=0.3s, radius=1.2,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=0.4, velocity=-25*@(0, -1)
+                )
+            } else {
+                behavior<thrustSparks> on Paint {
+                    Spark(
+                        color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+                        luminous=1, shine=0.5, bloom=1, layer=-5,
+                        splatter=1, velocity=-25*@(0, -1)
+                    )
+                }
+            }
+        }
+
+    }
+
+    on ButtonUp(ArrowUp), ButtonUp(KeyW) {
+        delete behavior<thrust>
+        delete behavior<thrustSparks>
+    }
+
+    on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
+        behavior<strafeLeft> on BeforePhysics {
+            if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
+                ApplyImpulse(SHIP_ACCEL*3 * @(-1, 0))
+            } else {
+                ApplyImpulse(SHIP_ACCEL * @(-1, 0))
+            }
+        }
+
+        behavior<strafeLeftSparks> on Paint {
+            ConsoleLog(Heading)
+            if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
+                Spark(
+                    color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=0.4, velocity=-25*@(-1, 0)
+                )
+            } else {
+                Spark(
+                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=1, velocity=-25*@(-1, 0)
+                )
+            }
+        }
+    }
+
+    on ButtonUp(ArrowLeft), ButtonUp(KeyA) {
+        delete behavior<strafeLeft>
+        delete behavior<strafeLeftSparks>
+    }
+
+    on ButtonDown(ArrowRight), ButtonDown(KeyD) {
+        behavior<strafeRight> on BeforePhysics {
+            if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
+                ApplyImpulse(SHIP_ACCEL*3 * @(1, 0))
+            } else {
+                ApplyImpulse(SHIP_ACCEL * @(1, 0)) 
+            }
+        }
+
+        behavior<strafeRightSparks> on Paint {
+            if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
+                Spark(
+                    color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=0.4, velocity=-25*@(1, 0)
+                )
+            } else {
+                Spark(
+                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=1, velocity=-25*@(1, 0)
+                ) 
+            }
+        }
+    }
+
+    on ButtonUp(ArrowRight), ButtonUp(KeyD) {
+        delete behavior<strafeRight>
+        delete behavior<strafeRightSparks>
+    }
+
+    on ButtonDown(ArrowDown), ButtonDown(KeyS) {
+        ReadyToPlay
+        
+        behavior<thrustReverse> on BeforePhysics {
+            if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
+                ApplyImpulse(SHIP_ACCEL*3 * @(0, 1))
+            } else {
+                ApplyImpulse(SHIP_ACCEL * @(0, 1))
+            }
+        }
+
+        behavior<thrustReverseSparks> on Paint {
+            if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
+                Spark(
+                    color=#0011ff, bodyOffset=@(-2,0), dissipate=0.5s, radius=1.2,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=0.4, velocity=-25*@(0, 1)
+                )
+            } else {
+                Spark(
+                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=1, velocity=-25*@(0, 1)
+                )
+            }
+        }
+    }
+
+    on ButtonUp(ArrowDown), ButtonUp(KeyS) {
+        delete behavior<thrustReverse>
+        delete behavior<thrustReverseSparks>
+    }
+
+    on ButtonDown(KeySpacebar) {
+        delete behavior<thrust>
+        delete behavior<thrustSparks>
+        delete behavior<strafeLeft>
+        delete behavior<strafeLeftSparks>
+        delete behavior<strafeRight>
+        delete behavior<strafeRightSparks>
+        delete behavior<thrustReverse>
+        delete behavior<thrustReverseSparks>
+        ApplyImpulse(Velocity*SHIP_ACCEL*-0.9)
+    }
+
+    
+    PolygonSprite<initialShield>(shape=Circle(radius=2), opacity=0.25, ownerColor=true, luminous=1, bloom=3, shading=0.1, shadow=0.5, layer=-5)
+    await ReadyToPlay
+    delete PolygonSprite<initialShield>
+    
+    on BeforeCollide that {
+        if that.Category.Overlaps(Category:Asteroid) {
+            repeat 5 {
+                Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
+            }
+
+            Transmission(audience=Audience:All) {
+                P {
+                    PlayerNameDisplay
+                    "'s ship was destroyed."
+                }
+            }
+            
+            Expire
+            break
+        }
+    }
+
+    on ButtonDown(Click) {
+        ReadyToPlay
+
+        behavior<shootBullet> {
+            loop {
+                Spawn projectile {
+                    PlasmaBolt(ship=)
+                }
+                await Tick(0.3s)
+            }
+        }
+    }
+
+    on ButtonUp(Click) {
+        delete behavior<shootBullet>
+    }
+
+    with Pointer {
+        Heading = Angle(Pointer - Pos)
+    }
+
+    // on Tick(60) {
+    //     ConsoleLog(Heading)
+    // }
+}

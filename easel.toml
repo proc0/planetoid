@@ -1,0 +1,8 @@
+[project]
+name = "Astroturd"
+
+[engine]
+edition = 15
+
+[authors]
+"u24z.HO5akuI" = "proc0"
