@@ -12,18 +12,18 @@ pub fn ship.Alien {
         turnRate=
     )
 
-    PolygonSprite(shape=Circle, color=#ccffcc, overlay=1)
-    PolygonCollider(shape=Circle, category=Category:Alien, density=1)
+    ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0.5, scale=3)
+    PolygonCollider(shape=Circle(3), category=Category:Alien, density=1)
     RecoverSpeed
     RecoverTurnRate
     WrapOutsideBoundary
     DespawnOutsideVerticalBoundary
 
-    with Health {
-        let proportion = Health / maxHealth
-        let color = proportion.BlendHue(#ff6600, #66ff00)
-        PolygonSprite(shape=Circle, color=, overlay=1)
-    }
+    // with Health {
+    //     let proportion = Health / maxHealth
+    //     let color = proportion.BlendHue(#ff6600, #66ff00)
+    //     ImageSprite(@assets/alien_ship_body.png, color=, shading=0.25, shadow=0.5, scale=3.5)
+    // }
     
     once BeforeDespawn {
         repeat 5 {
@@ -33,6 +33,8 @@ pub fn ship.Alien {
 
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Projectile) {
+            Strobe(shine=0.5, dissipate=0.5s)
+            
             Health -= 1
             if Health <= 0 {
                 Expire
