@@ -1,0 +1,50 @@
+pub const SHIP_ACCEL = 3
+
+pub fn this.Movement<Id>([body, radius]) {
+    
+    // let hasTurbo = trajectory == @(0,-1) || trajectory == @(1,0) || trajectory == @(0,1) || trajectory == @(-1,0)
+
+    with this.Pointer {
+        
+        behavior<Id+Thrust> on BeforePhysics {
+            let trajectory = this.Trajectory
+            ApplyImpulse(SHIP_ACCEL * trajectory)
+        }
+    }
+
+    behavior<Id+Render> on Paint {
+        let trajectory = this.Trajectory
+
+        Spark(radius=0.1*radius, velocity=-25*trajectory, layer=-5, color=#ff8800, dissipate=0.5s, luminous=1, shine=0.5, bloom=1, splatter=1)
+    }
+}
+
+pub fn this.StopMovement<Id> {
+    // this.Trajectory = @(0, 0)
+    // this.HasTurbo = false
+    delete behavior<Id+Thrust>
+    delete behavior<Id+Render>
+}
+
+pub fn this.TurboMovement<Id>([body, radius]) {
+    
+    // let hasTurbo = trajectory == @(0,-1) || trajectory == @(1,0) || trajectory == @(0,1) || trajectory == @(-1,0)
+    
+    behavior<Id+Thrust> on BeforePhysics {
+        let trajectory = this.Trajectory
+        ApplyImpulse(SHIP_ACCEL*3 * trajectory)
+    }
+
+    behavior<Id+Render> on Paint {
+        let trajectory = this.Trajectory
+        Spark(radius=1.2, velocity=-25*trajectory, layer=-5, color=#0011ff,  dissipate=0.5s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
+
+    }
+}
+
+pub fn this.StopTurboMovement<Id> {
+    this.Trajectory = @(0, 0)
+    this.HasTurbo = false
+    delete behavior<Id+Thrust>
+    delete behavior<Id+Render>
+}

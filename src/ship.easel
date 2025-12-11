@@ -1,7 +1,15 @@
-pub collect ship.NumPlasmaBolts = 1
 signal ship.ReadyToPlay
+pub symbol Forward
+pub symbol Rightward
+pub symbol Backward
+pub symbol Leftward
+pub symbol Thrust
+pub symbol Render
+pub field ship.Trajectory = @(0,0)
+pub field ship.HasTurbo = false
+pub field ship.PointerDir = @(0,0)
 
-pub const SHIP_ACCEL = 3
+pub collect ship.NumPlasmaBolts = 1
 pub const RIGHT_ANGLE = Pi/2
 
 pub fn ship.Ship([owner]) {
@@ -11,14 +19,11 @@ pub fn ship.Ship([owner]) {
     Body(pos = BoundaryRadius * Random * RandomVector)
 
     ImageSprite(@assets/ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
-    // PolygonSprite(shape=Circle, color=#0000ff)
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    TextSprite(
-        owner.PlayerName,
-        noRotation=true, screenOffset=@(0, 3.5), layer=-15,
-        ownerColor=true, opacity=0.5, strobe=false,
-        heightPx=22, anchorTop=true, luminous=1)
+    TextSprite(owner.PlayerName,
+        anchorTop=true, noRotation=true, screenOffset=@(0, 3.5), layer=-15,
+        heightPx=22, ownerColor=true, opacity=0.5, strobe=false, luminous=1)
 
     PointerAimingLine(body=ship, color=#888888, opacity=0.1, radius=0.5, layer=-20)
     
@@ -29,147 +34,160 @@ pub fn ship.Ship([owner]) {
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
         ReadyToPlay
+            Trajectory = PointerDir
+        StopMovement<Leftward>
+        StopMovement<Rightward>
+        StopMovement<Backward>
+        Movement<Forward>
         
-        behavior<thrust> on BeforePhysics {
-            if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
-                ApplyImpulse(SHIP_ACCEL*3 * @(0, -1))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(0, -1))
-            }
-        }
+        // behavior<thrust> on BeforePhysics {
+        //     if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
+        //         ApplyImpulse(SHIP_ACCEL*3 * @(0, -1))
+        //     } else {
+        //         ApplyImpulse(SHIP_ACCEL * @(0, -1))
+        //     }
+        // }
 
-        behavior<thrustSparks> on Paint {
-            if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
-                Spark(
-                    color=#0011ff, bodyOffset=@(-2,0), dissipate=0.3s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(0, -1)
-                )
-            } else {
-                behavior<thrustSparks> on Paint {
-                    Spark(
-                        color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                        luminous=1, shine=0.5, bloom=1, layer=-5,
-                        splatter=1, velocity=-25*@(0, -1)
-                    )
-                }
-            }
-        }
-
+        // behavior<thrustSparks> on Paint {
+        //     if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
+        //         Spark(radius=1.2, bodyOffset=@(-2,0), velocity=-25*@(0, -1), layer=-5, color=#0011ff, dissipate=0.3s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
+        //     } else {
+        //         Spark(radius=0.1*radius, velocity=-25*@(0, -1), layer=-5, color=#ff8800, dissipate=0.5s, luminous=1, shine=0.5, bloom=1, splatter=1)
+        //     }
+        // }
     }
 
     on ButtonUp(ArrowUp), ButtonUp(KeyW) {
-        delete behavior<thrust>
-        delete behavior<thrustSparks>
+        StopMovement<Forward>
+        
+        // delete behavior<Forward+Thrust>
+        // delete behavior<Forward+Render>
     }
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
-        behavior<strafeLeft> on BeforePhysics {
-            if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
-                ApplyImpulse(SHIP_ACCEL*3 * @(-1, 0))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(-1, 0))
-            }
-        }
+            Trajectory = @(-1,0)
+        StopMovement<Forward>
+        StopMovement<Rightward>
+        StopMovement<Backward>
+        Movement<Leftward>
+        //     if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
+        //         ApplyImpulse(SHIP_ACCEL*3 * @(-1, 0))
+        //     } else {
+        //         ApplyImpulse(SHIP_ACCEL * @(-1, 0))
+        //     }
+        // }
 
-        behavior<strafeLeftSparks> on Paint {
-            if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
-                Spark(
-                    color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(-1, 0)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(-1, 0)
-                )
-            }
-        }
+        // behavior<strafeLeftSparks> on Paint {
+        //     if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
+        //         Spark(radius=1.2, bodyOffset=@(-2, 0), velocity=-25*@(-1, 0), layer=-5, color=#0011ff,  dissipate=0.5s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
+        //     } else {
+        //         Spark(radius=0.1*radius, velocity=-25*@(-1, 0), layer=-5, color=#ff8800, dissipate=0.5s, luminous=1, shine=0.5, bloom=1, splatter=1)
+        //     }
+        // }
     }
 
     on ButtonUp(ArrowLeft), ButtonUp(KeyA) {
-        delete behavior<strafeLeft>
-        delete behavior<strafeLeftSparks>
+        StopMovement<Leftward>
+        
+        // delete behavior<Leftward+Thrust>
+        // delete behavior<Leftward+Render>
     }
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
-        behavior<strafeRight> on BeforePhysics {
-            if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
-                ApplyImpulse(SHIP_ACCEL*3 * @(1, 0))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(1, 0)) 
-            }
-        }
+            Trajectory = @(1,0)
+        StopMovement<Forward>
+        StopMovement<Leftward>
+        StopMovement<Backward>
+        Movement<Rightward>
+        
+        // behavior<strafeRight> on BeforePhysics {
+        //     if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
+        //         ApplyImpulse(SHIP_ACCEL*3 * @(1, 0))
+        //     } else {
+        //         ApplyImpulse(SHIP_ACCEL * @(1, 0)) 
+        //     }
+        // }
 
-        behavior<strafeRightSparks> on Paint {
-            if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
-                Spark(
-                    color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(1, 0)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(1, 0)
-                ) 
-            }
-        }
+        // behavior<strafeRightSparks> on Paint {
+        //     if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
+        //         Spark(
+        //             color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
+        //             luminous=1, shine=0.5, bloom=1, layer=-5,
+        //             splatter=0.4, velocity=-25*@(1, 0)
+        //         )
+        //     } else {
+        //         Spark(
+        //             color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+        //             luminous=1, shine=0.5, bloom=1, layer=-5,
+        //             splatter=1, velocity=-25*@(1, 0)
+        //         ) 
+        //     }
+        // }
     }
 
     on ButtonUp(ArrowRight), ButtonUp(KeyD) {
-        delete behavior<strafeRight>
-        delete behavior<strafeRightSparks>
+        StopMovement<Rightward>
+        // delete behavior<Rightward+Thrust>
+        // delete behavior<Rightward+Render>
     }
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
         ReadyToPlay
+            Trajectory = -PointerDir
+        StopMovement<Forward>
+        StopMovement<Leftward>
+        StopMovement<Rightward>
         
-        behavior<thrustReverse> on BeforePhysics {
-            if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
-                ApplyImpulse(SHIP_ACCEL*3 * @(0, 1))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(0, 1))
-            }
-        }
+        Movement<Backward>
+        
+        // behavior<thrustReverse> on BeforePhysics {
+        //     if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
+        //         ApplyImpulse(SHIP_ACCEL*3 * @(0, 1))
+        //     } else {
+        //         ApplyImpulse(SHIP_ACCEL * @(0, 1))
+        //     }
+        // }
 
-        behavior<thrustReverseSparks> on Paint {
-            if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
-                Spark(
-                    color=#0011ff, bodyOffset=@(-2,0), dissipate=0.5s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(0, 1)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(0, 1)
-                )
-            }
-        }
+        // behavior<thrustReverseSparks> on Paint {
+        //     if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
+        //         Spark(
+        //             color=#0011ff, bodyOffset=@(-2,0), dissipate=0.5s, radius=1.2,
+        //             luminous=1, shine=0.5, bloom=1, layer=-5,
+        //             splatter=0.4, velocity=-25*@(0, 1)
+        //         )
+        //     } else {
+        //         Spark(
+        //             color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+        //             luminous=1, shine=0.5, bloom=1, layer=-5,
+        //             splatter=1, velocity=-25*@(0, 1)
+        //         )
+        //     }
+        // }
     }
 
     on ButtonUp(ArrowDown), ButtonUp(KeyS) {
-        delete behavior<thrustReverse>
-        delete behavior<thrustReverseSparks>
+        StopMovement<Backward>
+        
+        // delete behavior<Backward+Thrust>
+        // delete behavior<Backward+Render>
     }
 
     on ButtonDown(KeySpacebar) {
-        delete behavior<thrust>
-        delete behavior<thrustSparks>
-        delete behavior<strafeLeft>
-        delete behavior<strafeLeftSparks>
-        delete behavior<strafeRight>
-        delete behavior<strafeRightSparks>
-        delete behavior<thrustReverse>
-        delete behavior<thrustReverseSparks>
-        ApplyImpulse(Velocity*SHIP_ACCEL*-0.9)
+        TurboMovement<turbo>
+    //     delete behavior<thrust>
+    //     delete behavior<thrustSparks>
+    //     delete behavior<strafeLeft>
+    //     delete behavior<strafeLeftSparks>
+    //     delete behavior<strafeRight>
+    //     delete behavior<strafeRightSparks>
+    //     delete behavior<thrustReverse>
+    //     delete behavior<thrustReverseSparks>
+    //     ApplyImpulse(Velocity*SHIP_ACCEL*-0.9)
     }
 
+    on ButtonUp(KeySpacebar) {
+        StopTurboMovement<turbo>
+    }
     
     PolygonSprite<initialShield>(shape=Circle(radius=2), opacity=0.25, ownerColor=true, luminous=1, bloom=3, shading=0.1, shadow=0.5, layer=-5)
     await ReadyToPlay
@@ -216,6 +234,23 @@ pub fn ship.Ship([owner]) {
 
     with Pointer {
         Heading = Angle(Pointer - Pos)
+        PointerDir = Direction(Pointer)
+        // if Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5 {
+        //     Trajectory = @(0,-1)
+        //     // HasTurbo = Trajectory == @(0,-1)
+        // } else if Heading > -0.5 && Heading < 0.5 {
+        //     Trajectory = @(1,0)
+        //     // HasTurbo = Trajectory == @(1,0)
+        // } else if Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5 {
+        //     Trajectory = @(0,1)
+        //     // HasTurbo = Trajectory == @(0,1)
+        // } else if Heading > Pi - 0.5 && Heading < Pi + 0.5 {
+        //     Trajectory = @(-1,0)
+        //     // HasTurbo = Trajectory == @(-1,0)
+        // } else {
+        //     Trajectory = @(0,0)
+        //     // HasTurbo = false
+        // }
     }
 
     // on Tick(60) {
