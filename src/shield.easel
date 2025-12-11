@@ -14,8 +14,14 @@ pub fn shield.Shield(ship) {
         let age = Tick - birth
         let proportion = (age / lifetime).Clamp(0, 1)
         
-        PolygonSprite(shape=Circle, opacity=0.5*(1-proportion), ownerColor=true, shine=1, bloom=3, shading=0.1, shadow=0.5, layer=-5)
-
+        if proportion >= 0.7 {
+            PolygonSprite(shape=Circle(5), color=#0000ff, flicker=1, opacity=0.1, shine=0, shading=0.5, layer=1)
+        } else {
+            PolygonSprite(shape=Circle(5), color=#0022ff, feather=0.2, opacity=0.1, shine=0.5, shading=0.2, layer=1)
+        }
+        
+        PolygonSprite(shape=Circle(5), color=#0033ee, crater=0.99, opacity=0.5, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=1)
+        
         if proportion >= 1 {
             Expire
             break
@@ -30,13 +36,13 @@ pub fn shield.Shield(ship) {
     }
 }
 
-pub fn powerup.ShieldPowerup() {
+pub fn powerup.ShieldPowerup(pos=@(0,0)) {
     use body=powerup,
     use radius=1.5, speed=10, luminous=1
 
     Body(
-        pos=@(Random * BoundaryRadius * PickRandom([1,-1]), -BoundaryRadius - radius),
-        velocity=speed*RandomVector,
+        pos=,
+        velocity=@(Random, speed*Random),
     )
 
     PolygonSprite(shape=Circle, color=#00ffaa, bloom=3, opacity=0.5, shadow=0.5)

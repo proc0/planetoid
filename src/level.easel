@@ -3,13 +3,24 @@ pub signal World.BeginLevel(count)
 pub fn World.Level {
 
     on World.BeginLevel count {
-        if count == 1 {
+        if count == 0 {
+            Level0
+        } else if count == 1 {
             Level1
         } else if count == 2 {
             Level2
         }
     }
 
+}
+
+pub fn this.Level0 {
+    once Tick {
+        Spawn powerup {
+            ShieldPowerup
+            // TriblastPowerup
+        }
+    }
 }
 
 pub fn this.Level1 {
@@ -35,20 +46,20 @@ pub fn this.Level1 {
         }
     }
 
-    with Tick(5s) {
-        const MaxPowerups = 1
-        if QueryCount(filter=Category:Powerup) < MaxPowerups {
-            Spawn powerup {
-                surprise {                
-                    ShieldPowerup,
-                    TriblastPowerup,
-                }
-            }
-        }
-    }
+    // with Tick(5s) {
+    //     const MaxPowerups = 1
+    //     if QueryCount(filter=Category:Powerup) < MaxPowerups {
+    //         Spawn powerup {
+    //             surprise {                
+    //                 ShieldPowerup,
+    //                 TriblastPowerup,
+    //             }
+    //         }
+    //     }
+    // }
 
     with Tick(5s) {
-        const MaxAliens=1
+        const MaxAliens=3
         if QueryCount(filter=Category:Alien) < MaxAliens {
             Spawn ship {
                 Alien

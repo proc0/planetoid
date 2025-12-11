@@ -10,11 +10,11 @@ pub fn ship.Ship([owner]) {
     use body=ship
     use radius=1
     
-    Body(pos = BoundaryRadius * Random * RandomVector)
+    Body(pos = @(0, BoundaryRadius - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    PolygonSprite<initialShield>(shape=Circle(radius=3), layer=-5, ownerColor=0.45, color=#00ffaa, luminous=1, bloom=3, shading=0.1, shadow=0.5)
-    ImageSprite(@assets/ship_body.png, ownerColor=0.25, shading=0.25, shadow=0.5, scale=4)
+    ImageSprite(@assets/ship_body.png, ownerColor=0.25, shading=0.25, shine=0.2, shadow=0.5, scale=4)
+    ImageSprite<initialShield>(@assets/ship_body.png, overlay=15, ownerColor=0.25, shine=0.3, shading=0.25, shadow=0.5, scale=4)
     
     // TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true, luminous=1)
     PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20)
@@ -203,7 +203,7 @@ pub fn ship.Ship([owner]) {
     
     await ReadyToPlay
     
-    delete PolygonSprite<initialShield>
+    delete ImageSprite<initialShield>
     
     on BeforeCollide that {
         if QueryCount(filter=Category:Shield) > 0 {

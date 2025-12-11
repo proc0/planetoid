@@ -1,10 +1,10 @@
-pub fn powerup.TriblastPowerup {
+pub fn powerup.TriblastPowerup(pos=@(0,0)) {
     use body=powerup
     use radius=1.5, speed=10, luminous=1
 
     Body(
-        pos = (BoundaryRadius + radius + 5) * RandomVector,
-        velocity = speed*RandomVector,
+        pos=,
+        velocity = @(Random, speed*Random),
     )
 
     PolygonSprite(shape=Circle, color=#00ffaa, opacity=0.5, bloom=3, shadow=0.5)
