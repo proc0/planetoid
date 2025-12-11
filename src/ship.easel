@@ -3,6 +3,7 @@ signal ship.ReadyToPlay
 pub field ship.HasTurbo = false
 
 pub const SHIP_ACCEL = 3
+pub const SHIP_TURBO = 9
 pub const RIGHT_ANGLE = Pi/2
 
 pub fn ship.Ship([owner]) {
@@ -10,17 +11,12 @@ pub fn ship.Ship([owner]) {
     use radius=1
 
     Body(pos = BoundaryRadius * Random * RandomVector)
-
-    ImageSprite(@assets/ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
-    // PolygonSprite(shape=Circle, color=#0000ff)
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    TextSprite(
-        owner.PlayerName,
-        noRotation=true, screenOffset=@(0, 3.5), layer=-15,
-        ownerColor=true, opacity=0.5, strobe=false,
-        heightPx=22, anchorTop=true, luminous=1)
-
+    PolygonSprite<initialShield>(shape=Circle(radius=3), layer=-5, ownerColor=0.45, color=#00ffaa, luminous=1, bloom=3, shading=0.1, shadow=0.5)
+    ImageSprite(@assets/ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
+    
+    TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 3.5), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true, luminous=1)
     PointerAimingLine(body=ship, color=#888888, opacity=0.1, radius=0.5, layer=-20)
     
     LimitSpeed(maxSpeed=30)
@@ -30,29 +26,16 @@ pub fn ship.Ship([owner]) {
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
         behavior<thrust> on BeforePhysics {
-            if HasTurbo {
-                ApplyImpulse(SHIP_ACCEL*3 * Direction(Pointer - Pos))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * Direction(Pointer - Pos))
-            }
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            ApplyImpulse(impulse * Direction(Pointer - Pos))
         }
 
         behavior<thrustSparks> on Paint {
-            if HasTurbo {
-                Spark(
-                    color=#0011ff, bodyOffset=@(-2,0), dissipate=0.3s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(0, -1)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(0, -1)
-                )
-            }
+            let color = HasTurbo ? #0011ff : #ff8800
+            let cardinal = @(0, -1)
+            let radius = HasTurbo ? 1.2 : 0.1
+            Spark(radius=, color=, bodyOffset=@(-2,0), layer=-5, velocity=-25*cardinal, dissipate=0.3s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
         }
-
     }
 
     on ButtonDown(KeyShiftLeft) {
@@ -70,11 +53,9 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
         behavior<strafeLeft> on BeforePhysics {
-            if HasTurbo {
-                ApplyImpulse(SHIP_ACCEL*3 * @(-1, 0))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(-1, 0))
-            }
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            let cardinal = @(-1, 0)
+            ApplyImpulse(impulse * cardinal)
         }
 
         behavior<strafeLeftSparks> on Paint {
@@ -101,11 +82,9 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
         behavior<strafeRight> on BeforePhysics {
-            if HasTurbo {
-                ApplyImpulse(SHIP_ACCEL*3 * @(1, 0))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(1, 0)) 
-            }
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            let cardinal = @(1, 0)
+            ApplyImpulse(impulse * cardinal)
         }
 
         behavior<strafeRightSparks> on Paint {
@@ -131,14 +110,10 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
-        ReadyToPlay
-        
         behavior<thrustReverse> on BeforePhysics {
-            if HasTurbo {
-                ApplyImpulse(SHIP_ACCEL*3 * @(0, 1))
-            } else {
-                ApplyImpulse(SHIP_ACCEL * @(0, 1))
-            }
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            let cardinal = @(0, 1)
+            ApplyImpulse(impulse * cardinal)
         }
 
         behavior<thrustReverseSparks> on Paint {
@@ -175,29 +150,6 @@ pub fn ship.Ship([owner]) {
     //     Velocity = Velocity*0.3
     // }
 
-    
-    PolygonSprite<initialShield>(shape=Circle(radius=2), opacity=0.25, ownerColor=true, luminous=1, bloom=3, shading=0.1, shadow=0.5, layer=-5)
-    await ReadyToPlay
-    delete PolygonSprite<initialShield>
-    
-    on BeforeCollide that {
-        if that.Category.Overlaps(Category:Asteroid | Category:Alien | Category:Explosion) {
-            repeat 5 {
-                Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
-            }
-
-            Transmission(audience=Audience:All) {
-                P {
-                    PlayerNameDisplay
-                    "'s ship was destroyed."
-                }
-            }
-            
-            Expire
-            break
-        }
-    }
-
     on ButtonDown(Click) {
         behavior<shootBullet> {
             loop {
@@ -224,7 +176,26 @@ pub fn ship.Ship([owner]) {
     once Tick(3s) {
         ReadyToPlay
     }
-    // on Tick(60) {
-    //     ConsoleLog(Heading)
-    // }
+    
+    await ReadyToPlay
+    
+    delete PolygonSprite<initialShield>
+    
+    on BeforeCollide that {
+        if that.Category.Overlaps(Category:Asteroid | Category:Alien | Category:Explosion) {
+            repeat 5 {
+                Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
+            }
+
+            Transmission(audience=Audience:All) {
+                P {
+                    PlayerNameDisplay
+                    "'s ship was destroyed."
+                }
+            }
+            
+            Expire
+            break
+        }
+    }
 }
