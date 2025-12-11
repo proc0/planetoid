@@ -1,5 +1,6 @@
 pub collect ship.NumPlasmaBolts = 1
 signal ship.ReadyToPlay
+pub field ship.HasTurbo = false
 
 pub const SHIP_ACCEL = 3
 pub const RIGHT_ANGLE = Pi/2
@@ -28,34 +29,38 @@ pub fn ship.Ship([owner]) {
     WrapOutsideBoundary
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
-        ReadyToPlay
-        
         behavior<thrust> on BeforePhysics {
-            if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
-                ApplyImpulse(SHIP_ACCEL*3 * @(0, -1))
+            if HasTurbo {
+                ApplyImpulse(SHIP_ACCEL*3 * Direction(Pointer - Pos))
             } else {
-                ApplyImpulse(SHIP_ACCEL * @(0, -1))
+                ApplyImpulse(SHIP_ACCEL * Direction(Pointer - Pos))
             }
         }
 
         behavior<thrustSparks> on Paint {
-            if(Heading > -RIGHT_ANGLE - 0.5 && Heading < -RIGHT_ANGLE + 0.5) {
+            if HasTurbo {
                 Spark(
                     color=#0011ff, bodyOffset=@(-2,0), dissipate=0.3s, radius=1.2,
                     luminous=1, shine=0.5, bloom=1, layer=-5,
                     splatter=0.4, velocity=-25*@(0, -1)
                 )
             } else {
-                behavior<thrustSparks> on Paint {
-                    Spark(
-                        color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                        luminous=1, shine=0.5, bloom=1, layer=-5,
-                        splatter=1, velocity=-25*@(0, -1)
-                    )
-                }
+                Spark(
+                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+                    luminous=1, shine=0.5, bloom=1, layer=-5,
+                    splatter=1, velocity=-25*@(0, -1)
+                )
             }
         }
 
+    }
+
+    on ButtonDown(KeyShiftLeft) {
+        HasTurbo = true
+    }
+
+    on ButtonUp(KeyShiftLeft) {
+        HasTurbo = false
     }
 
     on ButtonUp(ArrowUp), ButtonUp(KeyW) {
@@ -65,7 +70,7 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
         behavior<strafeLeft> on BeforePhysics {
-            if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
+            if HasTurbo {
                 ApplyImpulse(SHIP_ACCEL*3 * @(-1, 0))
             } else {
                 ApplyImpulse(SHIP_ACCEL * @(-1, 0))
@@ -73,15 +78,15 @@ pub fn ship.Ship([owner]) {
         }
 
         behavior<strafeLeftSparks> on Paint {
-            if(Heading.Abs > Pi - 0.5 && Heading.Abs < Pi + 0.5) {
+            if HasTurbo {
                 Spark(
-                    color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
+                    color=#0011ff, bodyOffset=@(0, -1), dissipate=0.5s, radius=1.2,
                     luminous=1, shine=0.5, bloom=1, layer=-5,
                     splatter=0.4, velocity=-25*@(-1, 0)
                 )
             } else {
                 Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
+                    color=#ff8800, bodyOffset=@(0, -1), dissipate=0.5s, radius=0.1*radius,
                     luminous=1, shine=0.5, bloom=1, layer=-5,
                     splatter=1, velocity=-25*@(-1, 0)
                 )
@@ -96,7 +101,7 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
         behavior<strafeRight> on BeforePhysics {
-            if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
+            if HasTurbo {
                 ApplyImpulse(SHIP_ACCEL*3 * @(1, 0))
             } else {
                 ApplyImpulse(SHIP_ACCEL * @(1, 0)) 
@@ -104,9 +109,9 @@ pub fn ship.Ship([owner]) {
         }
 
         behavior<strafeRightSparks> on Paint {
-            if(Heading.Abs > -0.5 && Heading.Abs < 0.5) {
+            if HasTurbo {
                 Spark(
-                    color=#0011ff, bodyOffset=@(-2, 0), dissipate=0.5s, radius=1.2,
+                    color=#0011ff, bodyOffset=@(0, 1), dissipate=0.5s, radius=1.2,
                     luminous=1, shine=0.5, bloom=1, layer=-5,
                     splatter=0.4, velocity=-25*@(1, 0)
                 )
@@ -129,7 +134,7 @@ pub fn ship.Ship([owner]) {
         ReadyToPlay
         
         behavior<thrustReverse> on BeforePhysics {
-            if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
+            if HasTurbo {
                 ApplyImpulse(SHIP_ACCEL*3 * @(0, 1))
             } else {
                 ApplyImpulse(SHIP_ACCEL * @(0, 1))
@@ -137,9 +142,9 @@ pub fn ship.Ship([owner]) {
         }
 
         behavior<thrustReverseSparks> on Paint {
-            if(Heading > RIGHT_ANGLE - 0.5 && Heading < RIGHT_ANGLE + 0.5) {
+            if HasTurbo {
                 Spark(
-                    color=#0011ff, bodyOffset=@(-2,0), dissipate=0.5s, radius=1.2,
+                    color=#0011ff, bodyOffset=@(0,1), dissipate=0.5s, radius=1.2,
                     luminous=1, shine=0.5, bloom=1, layer=-5,
                     splatter=0.4, velocity=-25*@(0, 1)
                 )
@@ -158,17 +163,17 @@ pub fn ship.Ship([owner]) {
         delete behavior<thrustReverseSparks>
     }
 
-    on ButtonDown(KeySpacebar) {
-        delete behavior<thrust>
-        delete behavior<thrustSparks>
-        delete behavior<strafeLeft>
-        delete behavior<strafeLeftSparks>
-        delete behavior<strafeRight>
-        delete behavior<strafeRightSparks>
-        delete behavior<thrustReverse>
-        delete behavior<thrustReverseSparks>
-        ApplyImpulse(Velocity*SHIP_ACCEL*-0.9)
-    }
+    // on ButtonDown(ArrowDown), ButtonDown(KeyS) {
+    //     delete behavior<thrust>
+    //     delete behavior<thrustSparks>
+    //     delete behavior<strafeLeft>
+    //     delete behavior<strafeLeftSparks>
+    //     delete behavior<strafeRight>
+    //     delete behavior<strafeRightSparks>
+    //     delete behavior<thrustReverse>
+    //     delete behavior<thrustReverseSparks>
+    //     Velocity = Velocity*0.3
+    // }
 
     
     PolygonSprite<initialShield>(shape=Circle(radius=2), opacity=0.25, ownerColor=true, luminous=1, bloom=3, shading=0.1, shadow=0.5, layer=-5)
@@ -194,8 +199,6 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(Click) {
-        ReadyToPlay
-
         behavior<shootBullet> {
             loop {
                 const anglePerBolt = 0.03rev
@@ -218,6 +221,9 @@ pub fn ship.Ship([owner]) {
         Heading = Angle(Pointer - Pos)
     }
 
+    once Tick(3s) {
+        ReadyToPlay
+    }
     // on Tick(60) {
     //     ConsoleLog(Heading)
     // }
