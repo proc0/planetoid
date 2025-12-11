@@ -10,7 +10,7 @@ pub fn ship.Ship([owner]) {
 
     Body(pos = BoundaryRadius * Random * RandomVector)
 
-    ImageSprite(@ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
+    ImageSprite(@assets/ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
     // PolygonSprite(shape=Circle, color=#0000ff)
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
