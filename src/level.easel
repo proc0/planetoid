@@ -1,0 +1,77 @@
+pub signal World.BeginLevel(count)
+
+pub fn World.Level {
+
+    on World.BeginLevel count {
+        if count == 1 {
+            Level1
+        } else if count == 2 {
+            Level2
+        }
+    }
+
+}
+
+pub fn this.Level1 {
+
+    once Tick {
+        OverlayContent<levelTitle> {
+            VStack(align=Align:Center) {
+                Standout(fontSize=5) { FlyInWords("Level 1") }
+            }
+        }
+    }
+
+    once Tick(3s) {
+        delete OverlayContent<levelTitle>
+    }
+
+    with Tick(1s) {
+        const MaxAsteroids = 15
+        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
+            Spawn asteroid {
+                Asteroid
+            }
+        }
+    }
+
+    with Tick(5s) {
+        const MaxPowerups = 1
+        if QueryCount(filter=Category:Powerup) < MaxPowerups {
+            Spawn powerup {
+                surprise {                
+                    ShieldPowerup,
+                    TriblastPowerup,
+                }
+            }
+        }
+    }
+
+    with Tick(5s) {
+        const MaxAliens=1
+        if QueryCount(filter=Category:Alien) < MaxAliens {
+            Spawn ship {
+                Alien
+
+                // once BeforeDespawn {
+                //     World.BeginLevel(2)
+                // }
+            }
+        }
+        
+    }
+}
+
+pub fn this.Level2 {
+    once Tick {
+        OverlayContent<level2Title> {
+            VStack(align=Align:Center) {
+                Standout(fontSize=5) { FlyInWords("Level 2") }
+            }
+        }
+    }
+
+    once Tick(3s) {
+        delete OverlayContent<level2Title>
+    }
+}

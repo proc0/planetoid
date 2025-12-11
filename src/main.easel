@@ -25,10 +25,10 @@ pub game fn World.Main(maxHumanPlayers=5) {
         once AfterEliminated {
             OverlayContent {
                 VStack(align=Align:Center) {
-                    Standout(fontSize=5) { FlyInWords("Game Over") }
+                    Standout(fontSize=5) { FlyInWords("Destroyed") }
 
                     HStack(animate=Animate:FlyFromBottom, align=Align:Center) {
-                        RaisedButton(Main, backgroundColor=Color:Primary) { "Play Again" }
+                        RaisedButton(Main, backgroundColor=Color:Primary) { "Retry" }
                     }
                 }
             }
@@ -38,36 +38,9 @@ pub game fn World.Main(maxHumanPlayers=5) {
     Spawn starfield {
         Starfield
     }
-    
-    with Tick(1s) {
-        const MaxAsteroids = 15
-        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
-            Spawn asteroid {
-                Asteroid
-            }
-        }
-    }
 
-    with Tick(5s) {
-        const MaxPowerups = 1
-        if QueryCount(filter=Category:Powerup) < MaxPowerups {
-            Spawn powerup {
-                surprise {                
-                    ShieldPowerup,
-                    TriblastPowerup,
-                }
-            }
-        }
-    }
-
-    with Tick(5s) {
-        const MaxAliens=2
-        if QueryCount(filter=Category:Alien) < MaxAliens {
-            Spawn ship {
-                Alien
-            }
-        }
-    }
+    World.Level
+    World.BeginLevel(1)
     
     ButtonRemap(Tap, Click)
 }
