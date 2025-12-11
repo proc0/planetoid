@@ -9,20 +9,24 @@ pub const RIGHT_ANGLE = Pi/2
 pub fn ship.Ship([owner]) {
     use body=ship
     use radius=1
-
+    
     Body(pos = BoundaryRadius * Random * RandomVector)
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
     PolygonSprite<initialShield>(shape=Circle(radius=3), layer=-5, ownerColor=0.45, color=#00ffaa, luminous=1, bloom=3, shading=0.1, shadow=0.5)
-    ImageSprite(@assets/ship_body.png, ownerColor=0.45, shading=0.25, shadow=0.5, scale=3)
+    ImageSprite(@assets/ship_body.png, ownerColor=0.25, shading=0.25, shadow=0.5, scale=4)
     
-    TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 3.5), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true, luminous=1)
-    PointerAimingLine(body=ship, color=#888888, opacity=0.1, radius=0.5, layer=-20)
+    // TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true, luminous=1)
+    PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20)
     
     LimitSpeed(maxSpeed=30)
-    DecayTurnRate
+    DecayTurnRate(0.8)
     CollideBoundary
     WrapOutsideBoundary
+
+    once Tick {
+       Heading = -RIGHT_ANGLE 
+    }
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
         behavior<thrust> on BeforePhysics {
@@ -173,6 +177,26 @@ pub fn ship.Ship([owner]) {
         Heading = Angle(Pointer - Pos)
     }
 
+    // on ButtonDown(KeyQ) {
+    //     behavior<turnLeft> on BeforePhysics {
+    //         ApplyTurningImpulse(-20)
+    //     }
+    // }
+
+    // on ButtonUp(KeyQ) {
+    //     delete behavior<turnLeft>
+    // }
+
+    // on ButtonDown(KeyE) {
+    //     behavior<turnRight> on BeforePhysics {
+    //         ApplyTurningImpulse(20)
+    //     }
+    // }
+    
+    // on ButtonUp(KeyE) {
+    //     delete behavior<turnRight>
+    // }
+    
     once Tick(3s) {
         ReadyToPlay
     }
