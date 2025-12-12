@@ -40,6 +40,8 @@ pub fn ship.Alien {
             
             Health -= 1
             if Health <= 0 {
+                Hear(@assets/explosion2.mp3)
+                
                 repeat 10 {
                     Spark(radius=4, color=#fbec8e, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
                 }

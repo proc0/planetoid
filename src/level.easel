@@ -24,7 +24,8 @@ pub fn this.Level0 {
 }
 
 pub fn this.Level1 {
-
+    Music(@assets/Enigma.mp3, volume=0.3)
+    
     once Tick {
         OverlayContent<levelTitle> {
             VStack(align=Align:Center) {

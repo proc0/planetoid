@@ -161,7 +161,15 @@ pub fn ship.Ship([owner]) {
             loop {
                 const anglePerBolt = 0.03rev
                 let initialAngle = -(anglePerBolt * (NumPlasmaBolts - 1)) / 2
-                for i in Range(0, NumPlasmaBolts) {                
+                if(NumPlasmaBolts == 3) {
+                    Hear(@assets/basic_laser3.mp3)
+                } else {
+                    surprise {
+                        Hear(@assets/basic_laser.mp3),
+                        Hear(@assets/basic_laser2.mp3),
+                    }
+                }
+                for i in Range(0, NumPlasmaBolts) {
                     Spawn projectile {
                         PlasmaBolt(ship=, headingOffset = initialAngle + i*anglePerBolt)
                     }
@@ -213,10 +221,12 @@ pub fn ship.Ship([owner]) {
         }
         
         if that.Category.Overlaps(Category:Asteroid | Category:Alien | Category:Explosion) {
+            Hear(@assets/explosion1.mp3)
+            
             repeat 5 {
                 Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
             }
-
+            
             Transmission(audience=Audience:All) {
                 P {
                     PlayerNameDisplay
