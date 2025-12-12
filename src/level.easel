@@ -17,8 +17,10 @@ pub fn World.Level {
 pub fn this.Level0 {
     once Tick {
         Spawn powerup {
-            ShieldPowerup
-            // TriblastPowerup
+            Powerup(type=ShieldPickup)
+        }
+        Spawn powerup {
+            Powerup(type=Multishot)
         }
     }
 }
@@ -61,9 +63,9 @@ pub fn this.Level1 {
 
     with Tick(5s) {
         const MaxAliens=3
-        if QueryCount(filter=Category:Alien) < MaxAliens {
+        if QueryCount(filter=Category:EnemyShip) < MaxAliens {
             Spawn ship {
-                Alien
+                EnemyShip
 
                 // once BeforeDespawn {
                 //     World.BeginLevel(2)

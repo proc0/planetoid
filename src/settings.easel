@@ -1,0 +1,9 @@
+pub const RIGHT_ANGLE = Pi/2
+
+pub const BoundaryRadius = 40
+pub const BoundaryWidth = BoundaryRadius*2
+
+pub const SHIP_THRUST = 3
+pub const SHIP_TURBO = 9
+
+pub const POWERUP_DROP_RATE = 0.3

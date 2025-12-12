@@ -4,6 +4,10 @@ pub game fn World.Main(maxHumanPlayers=5) {
     SolidBackground(color=#000000)
     Camera(@(0,0), radius=BoundaryRadius)
     Viewport(aspectRatio=1)
+
+    Spawn starfield {
+        Starfield
+    }
     
     SpawnEachPlayer owner {
         Subspawn ship {
@@ -33,10 +37,6 @@ pub game fn World.Main(maxHumanPlayers=5) {
                 }
             }
         }
-    }
-
-    Spawn starfield {
-        Starfield
     }
 
     World.Level

@@ -1,6 +1,3 @@
-pub const BoundaryRadius = 40
-pub const BoundaryWidth = BoundaryRadius*2
-
 pub fn this.WrapOutsideBoundary([body, radius]) {
     on BeforePhysics {
         let x = body.Pos.X

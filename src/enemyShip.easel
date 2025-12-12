@@ -1,0 +1,72 @@
+prop ship.Health
+
+pub fn ship.EnemyShip(health=5) {
+    use body=ship
+    use radius=1
+    use speed=8
+    
+    Health = health
+    
+    Body(pos=@(Random * (BoundaryRadius - 10) * PickRandom([1,-1]), -BoundaryRadius - radius), velocity=@(0, speed))
+    PolygonCollider(shape=Circle(3), category=Category:EnemyShip, density=1)
+
+    ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
+    
+    RecoverSpeed
+    WrapOutsideBoundary
+    DespawnOutsideVerticalBoundary
+
+    once Tick {
+       Heading = RIGHT_ANGLE 
+    }
+
+    on Tick(4s) {
+        Velocity = @(0, Speed*Random)
+    }
+
+    on Tick(2s) {
+        let hero = QueryNearest(filter=Category:Ship)
+        if hero {
+            Spawn projectile {
+                EnergonBoom(ship=, target=hero.Pos)
+            }
+        }
+    }
+
+    on BeforeCollide that {
+        if that.Category.Overlaps(Category:Projectile | Category:Asteroid) {
+            Strobe(shine=0.5, dissipate=0.5s)
+            Health -= 1
+            
+            if Health <= 2 {
+                ImageSprite(@assets/alien_ship_body.png, color=#ff0000, luminous=0.4, overlay=10, shine=0.2, opacity=0.7, shading=0, shadow=0, scale=5)
+            }
+            
+            if Health <= 0 {
+                Hear(@assets/explosion2.mp3)
+                
+                repeat 10 {
+                    Spark(radius=4, color=#fbec8e, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
+                }
+                
+                if Random > 1-POWERUP_DROP_RATE {
+                    Spawn powerup {
+                        surprise {                
+                            Powerup(pos=Pos, type=ShieldPickup),
+                            Powerup(pos=Pos, type=Multishot),
+                        }
+                    }
+                }
+                
+                Expire
+                break
+            }
+        }
+    }
+
+    once BeforeDespawn {
+        repeat 5 {
+            Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75, splatter=1, speed=10)
+        }
+    }
+}

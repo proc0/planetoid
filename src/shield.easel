@@ -1,20 +1,18 @@
-field ship.PreviousShield
-
 pub fn shield.Shield(ship) {
-    use body=ship, owner=ship.Owner
-    use radius=3, luminous=1
-    use lifetime=15s
+    use body=ship
+    use owner=ship.Owner
+    use radius=3
+    use luminous=1
+    use duration=15s
     
     PolygonCollider(shape=Circle, category=Category:Shield, density=0)
 
-    // PolygonSprite(shape=Circle, opacity=0.5, ownerColor=true, shine=1, bloom=3, shading=0.1, shadow=0.5, layer=-5)
-
-    let birth = Tick
+    let spawnTick = Tick
     with Tick(0.1s) {
-        let age = Tick - birth
-        let proportion = (age / lifetime).Clamp(0, 1)
+        let ellapsed = Tick - spawnTick
+        let consumed = (ellapsed / duration).Clamp(0, 1)
         
-        if proportion >= 0.7 {
+        if consumed >= 0.7 {
             PolygonSprite(shape=Circle(5), color=#0000ff, flicker=1, opacity=0.1, shine=0, shading=0.5, layer=1)
         } else {
             PolygonSprite(shape=Circle(5), color=#0022ff, feather=0.2, opacity=0.1, shine=0.5, shading=0.2, layer=1)
@@ -22,46 +20,7 @@ pub fn shield.Shield(ship) {
         
         PolygonSprite(shape=Circle(5), color=#0033ee, crater=0.99, opacity=0.5, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=1)
         
-        if proportion >= 1 {
-            Expire
-            break
-        }
-    }
-
-    BottomRightContent {
-        HStack(padding=8) {
-            Pip(backgroundColor=#dd00ff) { Image(@shield.svg, height=2, shadow=0.5) }
-            "Shield"
-        }
-    }
-}
-
-pub fn powerup.ShieldPowerup(pos=@(0,0)) {
-    use body=powerup,
-    use radius=1.5, speed=10, luminous=1
-
-    Body(
-        pos=,
-        velocity=@(Random, speed*Random),
-    )
-
-    PolygonSprite(shape=Circle, color=#00ffaa, bloom=3, opacity=0.5, shadow=0.5)
-    ImageSprite(@shield.svg, radius=0.85*radius)
-    PolygonCollider(shape=Circle, category=Category:Powerup, collideWith=Category:None, sense=Category:Ship, density=1)
-    RecoverSpeed
-    DecayTurnRate
-    WrapOutsideBoundary
-    DespawnOutsideVerticalBoundary
-    
-    on BeforeCollide that {
-        if that.Category.Overlaps(Category:Ship) {
-            use ship = that
-
-            PreviousShield.Expire
-            PreviousShield = ship.Subspawn shield {
-                Shield(ship=)
-            }
-
+        if consumed >= 1 {
             Expire
             break
         }

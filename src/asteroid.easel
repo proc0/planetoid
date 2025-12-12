@@ -6,17 +6,17 @@ pub fn asteroid.Asteroid(
     generation=0, parent?, health=10
 ) {
     use body=asteroid
-
+    
     Health=health
     
     Body(
         pos=,
         velocity = @(speed * Random * PickRandom([0.2,-0.2]), speed),
     )
-    ImageSprite(@assets/asteroid.png, shading=0.25, shadow=0)
     PolygonCollider(shape=Circle, category=Category:Asteroid)
+    ImageSprite(@assets/asteroid.png, shading=0.25, shadow=0)
+    
     RecoverSpeed
-
     DespawnOutsideBoundary
 
     // on Paint {
@@ -24,14 +24,18 @@ pub fn asteroid.Asteroid(
     // }
 
     on BeforeCollide that {
-        Strobe(shine=0.5, dissipate=0.5s)
+        // Strobe(shine=0.5, dissipate=0.5s)
         repeat 5 { Spark(color=#222222, shine=0, splatter=1, dissipate=0.5s, radius=Random, velocity=Velocity*RandomVector) }
+        
         const MaxGenerations = 2
+        // TODO add damage prop on ship, projectile and use it here
         if that.Category.Overlaps(Category:Asteroid) {
             Health -= 8
+            // Velocity += that.Velocity 
         } else {
             Health -= 3
         }
+        
         if Health <= 0 {
             Expire
             if generation < MaxGenerations {            

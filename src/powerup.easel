@@ -1,0 +1,48 @@
+pub symbol ShieldPickup
+pub symbol Multishot
+
+field ship.PreviousShield
+
+pub fn powerup.Powerup(pos=@(0,0), type) {
+    use body=powerup,
+    use radius=1.5
+    use speed=10
+    use luminous=1
+
+    Body(pos=, velocity=@(Random, speed*Random))
+    PolygonCollider(shape=Circle, category=Category:Powerup, collideWith=Category:None, sense=Category:Ship, density=1)
+
+    if type == ShieldPickup {    
+        PolygonSprite(shape=Circle, color=#00ffaa, bloom=3, opacity=0.5, shadow=0.5)
+        ImageSprite(@shield.svg, radius=0.85*radius)
+    } else if type == Multishot {
+        PolygonSprite(shape=Circle, color=#00ffaa, opacity=0.5, bloom=3, shadow=0.5)
+        ImageSprite(@triblast.svg, radius=0.85*radius)
+    }
+    
+    RecoverSpeed
+    DecayTurnRate
+    WrapOutsideBoundary
+    DespawnOutsideVerticalBoundary
+    
+    on BeforeCollide that {
+        if that.Category.Overlaps(Category:Ship) {
+            use ship = that
+
+            if type == ShieldPickup {
+                PreviousShield.Expire
+                PreviousShield = ship.Subspawn shield {
+                    Shield(ship=)
+                }
+            } else if type == Multishot {
+                ship.Subspawn {
+                    once Tick(10s) { Expire }
+                    give BlastCount(3)
+                }
+            }
+
+            Expire
+            break
+        }
+    }
+}

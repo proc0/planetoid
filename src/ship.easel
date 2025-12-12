@@ -1,10 +1,9 @@
-pub collect ship.NumPlasmaBolts = 1
-signal ship.ReadyToPlay
-pub field ship.HasTurbo = false
+signal ship.ReadyPlayer
 
-pub const SHIP_ACCEL = 3
-pub const SHIP_TURBO = 9
-pub const RIGHT_ANGLE = Pi/2
+pub collect ship.BlastCount = 1
+pub prop ship.Powerup = 'None'
+
+field ship.HasTurbo = false
 
 pub fn ship.Ship([owner]) {
     use body=ship
@@ -13,35 +12,27 @@ pub fn ship.Ship([owner]) {
     Body(pos = @(0, BoundaryRadius - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    // ImageSprite(@assets/ship_body.png, ownerColor=Alliance:Friendly, shading=0.25, shine=0.2, shadow=0, scale=4)
-    ImageSprite(@assets/ship_body.png, shading=0.25, shine=0, shadow=0, scale=4, layer=5)
     ImageSprite<initialShield>(@assets/ship_body.png, overlay=15, ownerColor=1, flicker=1, shine=0.3, shading=0.25, shadow=0, scale=4, layer=6)
+    ImageSprite(@assets/ship_body.png, shading=0.25, shine=0, shadow=0, scale=4, layer=5)
     
     TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true)
-    // TextSprite(owner.PlayerName, angleOffset=RIGHT_ANGLE, bold=true, layer=7, bodyOffset=@(0, 0), ownerColor=true, strobe=false, heightPx=22, anchorTop=true, shadow=1)
     PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20)
     
     LimitSpeed(maxSpeed=30)
-    DecayTurnRate(0.8)
+    DecayTurnRate(0.5)
     CollideBoundary
     WrapOutsideBoundary
 
     once Tick {
        Heading = -RIGHT_ANGLE 
     }
-    
-    on ButtonDown(ArrowUp), ButtonDown(KeyW) {
-        behavior<thrust> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
-            ApplyImpulse(impulse * Direction(Pointer - Pos))
-        }
 
-        behavior<thrustSparks> on Paint {
-            let color = HasTurbo ? #0011ff : #ff8800
-            let cardinal = @(0, -1)
-            let radius = HasTurbo ? 1.2 : 0.1
-            Spark(radius=, color=, bodyOffset=@(-2,0), layer=-5, velocity=-25*cardinal, dissipate=0.3s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
-        }
+    once Tick(3s) { 
+        ReadyPlayer 
+    }
+
+    with Pointer {
+        Heading = Angle(Pointer - Pos)
     }
 
     on ButtonDown(KeyShiftLeft) {
@@ -51,6 +42,20 @@ pub fn ship.Ship([owner]) {
     on ButtonUp(KeyShiftLeft) {
         HasTurbo = false
     }
+    
+    on ButtonDown(ArrowUp), ButtonDown(KeyW) {
+        behavior<thrust> on BeforePhysics {
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
+            ApplyImpulse(impulse * Direction(Pointer - Pos))
+        }
+
+        behavior<thrustSparks> on Paint {
+            let cardinal = @(0, -1)
+            let radius = HasTurbo ? 1.2 : 0.1
+            let color = HasTurbo ? #0011ff : #ff8800
+            Spark(radius=, color=, bodyOffset=@(-2,0), layer=-5, velocity=-25*cardinal, dissipate=0.3s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
+        }
+    }
 
     on ButtonUp(ArrowUp), ButtonUp(KeyW) {
         delete behavior<thrust>
@@ -59,7 +64,7 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
         behavior<strafeLeft> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
             let cardinal = @(-1, 0)
             ApplyImpulse(impulse * cardinal)
         }
@@ -88,7 +93,7 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
         behavior<strafeRight> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
             let cardinal = @(1, 0)
             ApplyImpulse(impulse * cardinal)
         }
@@ -117,7 +122,7 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
         behavior<thrustReverse> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_ACCEL
+            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
             let cardinal = @(0, 1)
             ApplyImpulse(impulse * cardinal)
         }
@@ -144,24 +149,12 @@ pub fn ship.Ship([owner]) {
         delete behavior<thrustReverseSparks>
     }
 
-    // on ButtonDown(ArrowDown), ButtonDown(KeyS) {
-    //     delete behavior<thrust>
-    //     delete behavior<thrustSparks>
-    //     delete behavior<strafeLeft>
-    //     delete behavior<strafeLeftSparks>
-    //     delete behavior<strafeRight>
-    //     delete behavior<strafeRightSparks>
-    //     delete behavior<thrustReverse>
-    //     delete behavior<thrustReverseSparks>
-    //     Velocity = Velocity*0.3
-    // }
-
     on ButtonDown(Click) {
-        behavior<shootBullet> {
+        behavior<laser> {
             loop {
                 const anglePerBolt = 0.03rev
-                let initialAngle = -(anglePerBolt * (NumPlasmaBolts - 1)) / 2
-                if(NumPlasmaBolts == 3) {
+                let initialAngle = -(anglePerBolt * (BlastCount - 1)) / 2
+                if(BlastCount == 3) {
                     Hear(@assets/basic_laser3.mp3)
                 } else {
                     surprise {
@@ -169,9 +162,9 @@ pub fn ship.Ship([owner]) {
                         Hear(@assets/basic_laser2.mp3),
                     }
                 }
-                for i in Range(0, NumPlasmaBolts) {
+                for i in Range(0, BlastCount) {
                     Spawn projectile {
-                        PlasmaBolt(ship=, headingOffset = initialAngle + i*anglePerBolt)
+                        Projectile(ship=, headingOffset = initialAngle + i*anglePerBolt)
                     }
                 }
                 await Tick(0.3s)
@@ -180,38 +173,10 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonUp(Click) {
-        delete behavior<shootBullet>
+        delete behavior<laser>
     }
 
-    with Pointer {
-        Heading = Angle(Pointer - Pos)
-    }
-
-    // on ButtonDown(KeyQ) {
-    //     behavior<turnLeft> on BeforePhysics {
-    //         ApplyTurningImpulse(-20)
-    //     }
-    // }
-
-    // on ButtonUp(KeyQ) {
-    //     delete behavior<turnLeft>
-    // }
-
-    // on ButtonDown(KeyE) {
-    //     behavior<turnRight> on BeforePhysics {
-    //         ApplyTurningImpulse(20)
-    //     }
-    // }
-    
-    // on ButtonUp(KeyE) {
-    //     delete behavior<turnRight>
-    // }
-    
-    once Tick(3s) {
-        ReadyToPlay
-    }
-    
-    await ReadyToPlay
+    await ReadyPlayer
     
     delete ImageSprite<initialShield>
     
@@ -220,7 +185,7 @@ pub fn ship.Ship([owner]) {
             return
         }
         
-        if that.Category.Overlaps(Category:Asteroid | Category:Alien | Category:Explosion) {
+        if that.Category.Overlaps(Category:Asteroid | Category:EnemyShip | Category:Explosion) {
             Hear(@assets/explosion1.mp3)
             
             repeat 5 {
