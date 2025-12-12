@@ -3,7 +3,8 @@ signal ship.ReadyPlayer
 pub collect ship.BlastCount = 1
 pub prop ship.Powerup = 'None'
 
-field ship.HasTurbo = false
+field ship.Boosting = false
+field ship.Pointing = @(0, 0)
 
 pub fn ship.Ship([owner]) {
     use body=ship
@@ -24,7 +25,7 @@ pub fn ship.Ship([owner]) {
     WrapOutsideBoundary
 
     once Tick {
-       Heading = -RIGHT_ANGLE 
+        Heading = -RIGHT_ANGLE 
     }
 
     once Tick(3s) { 
@@ -36,125 +37,117 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(KeyShiftLeft) {
-        HasTurbo = true
+        Boosting = true
     }
 
     on ButtonUp(KeyShiftLeft) {
-        HasTurbo = false
+        Boosting = false
     }
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
+        Pointing = @(0, -1)
+        
         behavior<thrust> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
+            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
             ApplyImpulse(impulse * Direction(Pointer - Pos))
         }
 
-        behavior<thrustSparks> on Paint {
-            let cardinal = @(0, -1)
-            let radius = HasTurbo ? 1.2 : 0.1
-            let color = HasTurbo ? #0011ff : #ff8800
-            Spark(radius=, color=, bodyOffset=@(-2,0), layer=-5, velocity=-25*cardinal, dissipate=0.3s, luminous=1, shine=0.5, bloom=1, splatter=0.4)
+        behavior<exhaust> on Paint {
+            let bodyOffset = @(-2,0)
+            let color = Boosting ? #0011ff : #ff8800
+            let radius = Boosting ? 1.2 : 0.1
+            let velocity = -25 * Pointing
+            Spark(radius=, velocity=, 
+                  bodyOffset=, layer=-5, 
+                  dissipate=0.3s, splatter=0.4, 
+                  color=, bloom=1, luminous=1, shine=0.5)
         }
     }
 
     on ButtonUp(ArrowUp), ButtonUp(KeyW) {
         delete behavior<thrust>
-        delete behavior<thrustSparks>
+        delete behavior<exhaust>
     }
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
+        Pointing = @(-1, 0)
+        
         behavior<strafeLeft> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
-            let cardinal = @(-1, 0)
-            ApplyImpulse(impulse * cardinal)
+            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
+            ApplyImpulse(impulse * Pointing)
         }
 
-        behavior<strafeLeftSparks> on Paint {
-            if HasTurbo {
-                Spark(
-                    color=#0011ff, bodyOffset=@(0, -1), dissipate=0.5s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(-1, 0)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, bodyOffset=@(0, -1), dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(-1, 0)
-                )
-            }
+        behavior<exhaustRight> on Paint {
+            let bodyOffset = Boosting ? @(-2,0) : @(0, -1)
+            let color = Boosting ? #0011ff : #ff8800
+            let radius = Boosting ? 1.2 : 0.1
+            let velocity = -25 * Pointing
+            Spark(radius=, velocity=, 
+                  bodyOffset=, layer=-5, 
+                  dissipate=0.3s, splatter=0.4, 
+                  color=, bloom=1, luminous=1, shine=0.5)
         }
     }
 
     on ButtonUp(ArrowLeft), ButtonUp(KeyA) {
         delete behavior<strafeLeft>
-        delete behavior<strafeLeftSparks>
+        delete behavior<exhaustRight>
     }
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
+        Pointing = @(1, 0)
+        
         behavior<strafeRight> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
-            let cardinal = @(1, 0)
-            ApplyImpulse(impulse * cardinal)
+            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
+            ApplyImpulse(impulse * Pointing)
         }
 
-        behavior<strafeRightSparks> on Paint {
-            if HasTurbo {
-                Spark(
-                    color=#0011ff, bodyOffset=@(0, 1), dissipate=0.5s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(1, 0)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(1, 0)
-                ) 
-            }
+        behavior<exhaustLeft> on Paint {
+            let bodyOffset = Boosting ? @(-2,0) : @(0, 1)
+            let color = Boosting ? #0011ff : #ff8800
+            let radius = Boosting ? 1.2 : 0.1
+            let velocity = -25 * Pointing
+            Spark(radius=, velocity=, 
+                  bodyOffset=, layer=-5, 
+                  dissipate=0.3s, splatter=0.4, 
+                  color=, bloom=1, luminous=1, shine=0.5)
         }
     }
 
     on ButtonUp(ArrowRight), ButtonUp(KeyD) {
         delete behavior<strafeRight>
-        delete behavior<strafeRightSparks>
+        delete behavior<exhaustLeft>
     }
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
-        behavior<thrustReverse> on BeforePhysics {
-            let impulse = HasTurbo ? SHIP_TURBO : SHIP_THRUST
-            let cardinal = @(0, 1)
-            ApplyImpulse(impulse * cardinal)
+        Pointing = @(0, 1)
+        
+        behavior<reverse> on BeforePhysics {
+            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
+            ApplyImpulse(impulse * Pointing)
         }
 
-        behavior<thrustReverseSparks> on Paint {
-            if HasTurbo {
-                Spark(
-                    color=#0011ff, bodyOffset=@(0,1), dissipate=0.5s, radius=1.2,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=0.4, velocity=-25*@(0, 1)
-                )
-            } else {
-                Spark(
-                    color=#ff8800, dissipate=0.5s, radius=0.1*radius,
-                    luminous=1, shine=0.5, bloom=1, layer=-5,
-                    splatter=1, velocity=-25*@(0, 1)
-                )
-            }
+        behavior<exhaust> on Paint {
+            let bodyOffset = Boosting ? @(-2,0) : @(1, 0)
+            let color = Boosting ? #0011ff : #ff8800
+            let radius = Boosting ? 1.2 : 0.1
+            let velocity = -25 * Pointing
+            Spark(radius=, velocity=, 
+                  bodyOffset=, layer=-5, 
+                  dissipate=0.3s, splatter=0.4, 
+                  color=, bloom=1, luminous=1, shine=0.5)
         }
     }
 
     on ButtonUp(ArrowDown), ButtonUp(KeyS) {
-        delete behavior<thrustReverse>
-        delete behavior<thrustReverseSparks>
+        delete behavior<reverse>
+        delete behavior<exhaust>
     }
 
     on ButtonDown(Click) {
         behavior<laser> {
             loop {
-                const anglePerBolt = 0.03rev
-                let initialAngle = -(anglePerBolt * (BlastCount - 1)) / 2
-                if(BlastCount == 3) {
+                if(BlastCount > 1) {
                     Hear(@assets/basic_laser3.mp3)
                 } else {
                     surprise {
@@ -162,11 +155,15 @@ pub fn ship.Ship([owner]) {
                         Hear(@assets/basic_laser2.mp3),
                     }
                 }
+                
+                const anglePerBolt = 0.03rev
+                let initialAngle = -(anglePerBolt * (BlastCount - 1)) / 2
                 for i in Range(0, BlastCount) {
                     Spawn projectile {
                         Projectile(ship=, headingOffset = initialAngle + i*anglePerBolt)
                     }
                 }
+                
                 await Tick(0.3s)
             }
         }
@@ -189,13 +186,13 @@ pub fn ship.Ship([owner]) {
             Hear(@assets/explosion1.mp3)
             
             repeat 5 {
-                Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
+                Spark(speed=10, dissipate=0.75s, feather=1, splatter=1, color=#ffffff, bloom=3, luminous=1)
             }
             
             Transmission(audience=Audience:All) {
                 P {
                     PlayerNameDisplay
-                    "'s ship was destroyed."
+                    " was destroyed."
                 }
             }
             

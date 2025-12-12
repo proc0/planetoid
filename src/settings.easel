@@ -4,6 +4,6 @@ pub const BoundaryRadius = 40
 pub const BoundaryWidth = BoundaryRadius*2
 
 pub const SHIP_THRUST = 3
-pub const SHIP_TURBO = 9
+pub const SHIP_BOOST = 9
 
 pub const POWERUP_DROP_RATE = 0.3
