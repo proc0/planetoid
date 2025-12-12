@@ -1,10 +1,20 @@
+// field starfield.OffsetBg
+
 pub fn starfield.Starfield {
     use body=starfield
-
+    use radius=60
+    
+    ImageSprite(@assets/starfield.jpg, layer=-100)
+    
     Body(
-        pos=@(0,0),
+        pos=@(Random*30*PickRandom([1,-1]),30),
     )
 
+    // on Paint {
+    //     OffsetBg -= 0.01
+    //     ImageSprite(@assets/starfield.jpg, layer=-100, screenOffset=@(0,OffsetBg))   
+    // }
+    
     repeat 15 {
         Spawn star {
             Star

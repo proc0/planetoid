@@ -11,7 +11,7 @@ pub fn ship.Alien {
         velocity=@(0, speed),
     )
 
-    ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0.5, scale=5)
+    ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
     PolygonCollider(shape=Circle(3), category=Category:Alien, density=1)
     RecoverSpeed
     WrapOutsideBoundary

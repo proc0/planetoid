@@ -13,10 +13,12 @@ pub fn ship.Ship([owner]) {
     Body(pos = @(0, BoundaryRadius - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    ImageSprite(@assets/ship_body.png, ownerColor=0.25, shading=0.25, shine=0.2, shadow=0.5, scale=4)
-    ImageSprite<initialShield>(@assets/ship_body.png, overlay=15, ownerColor=0.25, shine=0.3, shading=0.25, shadow=0.5, scale=4)
+    // ImageSprite(@assets/ship_body.png, ownerColor=Alliance:Friendly, shading=0.25, shine=0.2, shadow=0, scale=4)
+    ImageSprite(@assets/ship_body.png, shading=0.25, shine=0, shadow=0, scale=4, layer=5)
+    ImageSprite<initialShield>(@assets/ship_body.png, overlay=15, ownerColor=1, flicker=1, shine=0.3, shading=0.25, shadow=0, scale=4, layer=6)
     
-    // TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true, luminous=1)
+    TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true)
+    // TextSprite(owner.PlayerName, angleOffset=RIGHT_ANGLE, bold=true, layer=7, bodyOffset=@(0, 0), ownerColor=true, strobe=false, heightPx=22, anchorTop=true, shadow=1)
     PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20)
     
     LimitSpeed(maxSpeed=30)

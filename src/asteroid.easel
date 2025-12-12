@@ -13,7 +13,7 @@ pub fn asteroid.Asteroid(
         pos=,
         velocity = @(speed * Random * PickRandom([0.2,-0.2]), speed),
     )
-    ImageSprite(@assets/asteroid.png, shading=0.25, shadow=0.5)
+    ImageSprite(@assets/asteroid.png, shading=0.25, shadow=0)
     PolygonCollider(shape=Circle, category=Category:Asteroid)
     RecoverSpeed
 
