@@ -13,8 +13,8 @@ pub fn ship.Ship([owner]) {
     Body(pos = @(0, BoundaryRadius - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    ImageSprite<initialShield>(@assets/ship_body.png, overlay=15, ownerColor=1, flicker=1, shine=0.3, shading=0.25, shadow=0, scale=4, layer=6)
-    ImageSprite(@assets/ship_body.png, shading=0.25, shine=0, shadow=0, scale=4, layer=5)
+    ImageSprite<initialShield>(@assets/ship.svg, overlay=15, ownerColor=1, flicker=1, shine=0.3, shading=0.25, shadow=0, scale=4, layer=6)
+    ImageSprite(@assets/ship.svg, shading=0.25, shine=0, shadow=0, scale=4, layer=5)
     
     TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true)
     PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20)

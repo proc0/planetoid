@@ -4,8 +4,6 @@ pub fn starfield.Starfield {
     use body=starfield
     use radius=60
     
-    ImageSprite(@assets/starfield.jpg, layer=-100)
-    
     Body(
         pos=@(Random*30*PickRandom([1,-1]),30),
     )
