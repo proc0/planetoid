@@ -40,7 +40,7 @@ pub game fn World.Main(maxHumanPlayers=5) {
     }
 
     World.Level
-    World.BeginLevel(1)
+    World.BeginLevel(0)
     
     ButtonRemap(Tap, Click)
 }

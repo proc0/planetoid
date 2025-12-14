@@ -49,7 +49,7 @@ pub fn ship.Ship([owner]) {
         
         behavior<thrust> on BeforePhysics {
             let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
-            ApplyImpulse(impulse * Direction(Pointer - Pos))
+            ApplyImpulse(impulse * Direction(Heading))
         }
 
         behavior<exhaust> on Paint {
@@ -71,7 +71,10 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
         Pointing = @(-1, 0)
-        
+
+        // use this to lock into target:
+        // ApplyImpulse(impulse * RotateLeft(Pointer - Pos))
+        // ApplyTurningImpulse(impulse)
         behavior<strafeLeft> on BeforePhysics {
             let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
             ApplyImpulse(impulse * Pointing)
