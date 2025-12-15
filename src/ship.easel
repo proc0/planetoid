@@ -1,5 +1,4 @@
 pub collect ship.BlastCount = 1
-pub prop ship.Powerup = 'None'
 pub field ship.ShieldOn = false
 
 signal ship.ReadyPlayer
@@ -11,16 +10,18 @@ symbol Leftward
 symbol Backward
 
 pub fn ship.Ship([owner]) {
-    use body=ship, radius=1
+    use body=ship
+    use radius=1
+    use layer=5
     
     Body(pos = @(0, BoundaryRadius - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    ImageSprite<initialShield>(@assets/ship.svg, overlay=15, ownerColor=1, flicker=1, opacity=0.7, scale=4, layer=6)
-    ImageSprite(@assets/ship.svg, shading=0.3, scale=4, layer=5)
+    ImageSprite<invulnerable>(@assets/ship.svg, scale=4, overlay=1, flicker=1, ownerColor=1, opacity=0.7)
+    ImageSprite(@assets/ship.svg, scale=4, shading=0.3)
     
-    TextSprite(owner.PlayerName, anchorTop=true, bodyOffset=@(0, 4), heightPx=22, noRotation=true, layer=-15, ownerColor=true, opacity=0.5)
-    PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20, glare=0.5)
+    PointerAimingLine(body=ship, layer=4, radius=0.1, color=#ff0000, opacity=0.5, glare=0.5)
+    TextSprite(owner.PlayerName, layer=4, heightPx=22, bodyOffset=@(0, 4), anchorTop=true, noRotation=true, ownerColor=true, opacity=0.5)
     
     LimitSpeed(maxSpeed=SHIP_MAX_SPEED)
     DecayTurnRate(SHIP_MAX_SPEED)
@@ -79,7 +80,7 @@ pub fn ship.Ship([owner]) {
         Halt<Backward>
     }
 
-    on ButtonDown(Click) {
+    on ButtonDown(KeySpacebar), ButtonDown(Click) {
         behavior<laser> {
             loop {
                 if(BlastCount > 1) {
@@ -91,15 +92,15 @@ pub fn ship.Ship([owner]) {
                     }
                 }
                 
-                const anglePerBolt = 0.03rev
-                let initialAngle = -(anglePerBolt * (BlastCount - 1)) / 2
-                for i in Range(0, BlastCount) {
+                const angle = 0.03rev
+                let initial = -(angle * (BlastCount - 1)) / 2
+                for index in Range(0, BlastCount) {
                     Spawn projectile {
-                        Projectile(ship=, headingOffset = initialAngle + i*anglePerBolt)
+                        Projectile(source=ship, offset=initial + index * angle)
                     }
                 }
-                
-                await Tick(0.3s)
+                // TODO: make this a powerup
+                await Tick(SHIP_FIRE_RATE)
             }
         }
     }
@@ -109,17 +110,15 @@ pub fn ship.Ship([owner]) {
     }
 
     await ReadyPlayer
-    
-    delete ImageSprite<initialShield>
+    delete ImageSprite<invulnerable>
     
     on BeforeCollide that {
-        if ShieldOn {
-            return
-        }
+        if ShieldOn { return }
         
         if that.Category.Overlaps(Category:Asteroid | Category:EnemyShip | Category:Explosion) {
             Hear(@assets/explosion1.mp3)
-            
+
+            // TODO: abstract explosions
             repeat 5 {
                 Spark(speed=10, dissipate=0.75s, feather=1, splatter=1, color=#ffffff, bloom=3, luminous=1)
             }
@@ -156,14 +155,14 @@ fn ship.Propel<Path> (direction, [body, owner]) {
 
     behavior<Path+exhaust> on Paint {
         if TurboOn {
-            Spark(radius=1.2, velocity=-25 * direction, 
-                  bodyOffset=@(-2,0), layer=-5, 
-                  dissipate=0.2s, splatter=0.2,
+            Spark(radius=1, velocity=-25 * direction, 
+                  bodyOffset=@(-2, 0), layer=4, 
+                  dissipate=0.2s, splatter=0.6,
                   color=#0011ff, bloom=1, luminous=1, shine=0.8)
         } else {
             Spark(radius=0.7, velocity=-20 * direction, 
-                  bodyOffset=@(direction.Y, direction.X), 
-                  layer=-5, dissipate=0.2s, splatter=0.2, fade=1,
+                  bodyOffset=@(direction.Y*2, -direction.X), layer=4,
+                  dissipate=0.3s, splatter=0.4, fade=1, feather=1,
                   color=#ff8800, bloom=1, luminous=1, shine=0.5)
         }
     }

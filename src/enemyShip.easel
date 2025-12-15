@@ -1,12 +1,12 @@
 prop ship.Health
 
-pub fn ship.EnemyShip(health=5) {
+pub fn ship.EnemyShip(health=5, [owner]) {
     use body=ship
     use radius=1
     use speed=8
     
     Health = health
-    
+    // TODO: refactor the position into a function that generates spawn from top
     Body(pos=@(Random * (BoundaryRadius - 10) * PickRandom([1,-1]), -BoundaryRadius - radius), velocity=@(0, speed))
     PolygonCollider(shape=Circle(3), category=Category:EnemyShip, density=1)
 
@@ -57,6 +57,8 @@ pub fn ship.EnemyShip(health=5) {
                         }
                     }
                 }
+
+                owner.Score += 50
                 
                 Expire
                 break

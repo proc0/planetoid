@@ -8,5 +8,6 @@ pub const SHIP_TURBO = 9
 pub const SHIP_BRAKE = 0.2
 pub const SHIP_MAX_SPEED = 30
 pub const SHIP_DECAY_TURN = 0.1
+pub const SHIP_FIRE_RATE = 0.3s
 
 pub const POWERUP_DROP_RATE = 0.3

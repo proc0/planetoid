@@ -25,6 +25,9 @@ pub game fn World.Main(maxHumanPlayers=5) {
                 }
             }
         }
+
+        Level
+        BeginLevel(1)
         
         once AfterEliminated {
             OverlayContent {
@@ -38,9 +41,6 @@ pub game fn World.Main(maxHumanPlayers=5) {
             }
         }
     }
-
-    World.Level
-    World.BeginLevel(1)
     
     ButtonRemap(Tap, Click)
 }
