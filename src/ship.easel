@@ -1,14 +1,17 @@
-signal ship.ReadyPlayer
-
 pub collect ship.BlastCount = 1
 pub prop ship.Powerup = 'None'
+pub field ship.ShieldOn = false
 
-field ship.Boosting = false
-// field ship.Pointing = @(0, 0)
+signal ship.ReadyPlayer
+field ship.TurboOn = false
+
+symbol Forward
+symbol Rightward
+symbol Leftward
+symbol Backward
 
 pub fn ship.Ship([owner]) {
-    use body=ship
-    use radius=1
+    use body=ship, radius=1
     
     Body(pos = @(0, BoundaryRadius - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
@@ -19,8 +22,8 @@ pub fn ship.Ship([owner]) {
     TextSprite(owner.PlayerName, anchorTop=true, bodyOffset=@(0, 4), heightPx=22, noRotation=true, layer=-15, ownerColor=true, opacity=0.5)
     PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20, glare=0.5)
     
-    LimitSpeed(maxSpeed=30)
-    DecayTurnRate(0.1)
+    LimitSpeed(maxSpeed=SHIP_MAX_SPEED)
+    DecayTurnRate(SHIP_MAX_SPEED)
     CollideBoundary
     WrapOutsideBoundary
 
@@ -37,141 +40,43 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(KeyShiftLeft) {
-        Boosting = true
+        TurboOn = true
     }
 
     on ButtonUp(KeyShiftLeft) {
-        Boosting = false
+        TurboOn = false
     }
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
-        let pointing = @(0, -1)
-         
-        behavior<thrust> on BeforePhysics {
-            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
-            ApplyImpulse(impulse * Direction(Heading))
-        }
-
-        behavior<exhaust> on Paint {
-            let bodyOffset = @(-2,0)
-            let color = Boosting ? #0011ff : #ff8800
-            let radius = Boosting ? 1.2 : 0.1
-            let velocity = -25 * pointing
-            Spark(radius=, velocity=, 
-                  bodyOffset=, layer=-5, 
-                  dissipate=0.3s, splatter=0.4, 
-                  color=, bloom=1, luminous=1, shine=0.5)
-        }
+        Propel<Forward>(Direction(Heading))
     }
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
-        let pointing = @(-1, 0)
-
-        behavior<stopRight> on BeforePhysics {
-            if Velocity.X > 0 {
-                Velocity = @(Velocity.X*SHIP_BREAK, Velocity.Y)
-            }
-        }
-        // use this to lock into target:
-        // ApplyImpulse(impulse * RotateLeft(Pointer - Pos))
-        // ApplyTurningImpulse(impulse)
-        behavior<strafeLeft> on BeforePhysics {
-            delete behavior<stopRight>
-            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
-            ApplyImpulse(impulse * pointing)
-            // ApplyImpulse(impulse * RotateLeft(Pointer - Pos))
-            // ApplyTurningImpulse(impulse)
-            Heading = Angle(Pointer - Pos)
-        }
-
-        behavior<exhaustRight> on Paint {
-            let bodyOffset = Boosting ? @(-2,0) : @(0, -1)
-            let color = Boosting ? #0011ff : #ff8800
-            let radius = Boosting ? 1.2 : 0.1
-            let velocity = -25 * pointing
-            Spark(radius=, velocity=, 
-                  bodyOffset=, layer=-5, 
-                  dissipate=0.3s, splatter=0.4, 
-                  color=, bloom=1, luminous=1, shine=0.5)
-        }
+        Propel<Leftward>(@(-1, 0))
     }
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
-        let pointing = @(1, 0)
-
-        behavior<stopLeft> on BeforePhysics {
-            if Velocity.X < 0 {
-                Velocity = @(Velocity.X*SHIP_BREAK, Velocity.Y)
-            }
-        }
-        
-        behavior<strafeRight> on BeforePhysics {
-            delete behavior<stopLeft>
-            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
-            ApplyImpulse(impulse * pointing)
-            // ApplyImpulse(impulse * RotateRight(Pointer - Pos))
-            // ApplyTurningImpulse(impulse)
-            Heading = Angle(Pointer - Pos)
-        }
-
-        behavior<exhaustLeft> on Paint {
-            let bodyOffset = Boosting ? @(-2,0) : @(0, 1)
-            let color = Boosting ? #0011ff : #ff8800
-            let radius = Boosting ? 1.2 : 0.1
-            let velocity = -25 * pointing
-            Spark(radius=, velocity=, 
-                  bodyOffset=, layer=-5, 
-                  dissipate=0.3s, splatter=0.4, 
-                  color=, bloom=1, luminous=1, shine=0.5)
-        }
+        Propel<Rightward>(@(1, 0))
     }
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
-        let pointing = @(0, 1)
-
-        behavior<stopReverse> on BeforePhysics {
-            if Velocity.X < 0 {
-                Velocity = @(Velocity.X*SHIP_BREAK, Velocity.Y)
-            }
-        }
-        
-        behavior<reverse> on BeforePhysics {
-            delete behavior<stopReverse>
-            let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
-            ApplyImpulse(impulse * pointing)
-            Heading = Angle(Pointer - Pos)
-        }
-
-        behavior<exhaustReverse> on Paint {
-            let bodyOffset = Boosting ? @(-2,0) : @(1, 0)
-            let color = Boosting ? #0011ff : #ff8800
-            let radius = Boosting ? 1.2 : 0.1
-            let velocity = -25 * pointing
-            Spark(radius=, velocity=, 
-                  bodyOffset=, layer=-5, 
-                  dissipate=0.3s, splatter=0.4, 
-                  color=, bloom=1, luminous=1, shine=0.5)
-        }
+        Propel<Backward>(@(0, 1))
     }
 
     on ButtonUp(ArrowUp), ButtonUp(KeyW) {
-        delete behavior<thrust>
-        delete behavior<exhaust>
+        Halt<Forward>
     }
     
     on ButtonUp(ArrowLeft), ButtonUp(KeyA) {
-        delete behavior<strafeLeft>
-        delete behavior<exhaustRight>
+        Halt<Leftward>
     }
     
     on ButtonUp(ArrowRight), ButtonUp(KeyD) {
-        delete behavior<strafeRight>
-        delete behavior<exhaustLeft>
+        Halt<Rightward>
     }
     
     on ButtonUp(ArrowDown), ButtonUp(KeyS) {
-        delete behavior<reverse>
-        delete behavior<exhaustReverse>
+        Halt<Backward>
     }
 
     on ButtonDown(Click) {
@@ -208,7 +113,7 @@ pub fn ship.Ship([owner]) {
     delete ImageSprite<initialShield>
     
     on BeforeCollide that {
-        if QueryCount(filter=Category:Shield) > 0 {
+        if ShieldOn {
             return
         }
         
@@ -230,4 +135,38 @@ pub fn ship.Ship([owner]) {
             break
         }
     }
+}
+
+fn ship.Propel<Path> (direction, [body, owner]) {
+    behavior<Path+brake> on BeforePhysics {
+        if Velocity.X > 0 {
+            Velocity = @(Velocity.X * SHIP_BRAKE, Velocity.Y)
+        }
+    }
+    
+    // NOTE: to lock on to target (Pointer)
+    // ApplyImpulse(impulse * RotateLeft(Pointer - Pos))
+    // ApplyTurningImpulse(impulse)
+    behavior<Path+thrust> on BeforePhysics {
+        delete behavior<Path+brake>
+        let impulse = TurboOn ? SHIP_TURBO : SHIP_PROPEL
+        ApplyImpulse(impulse * direction)
+        Heading = Angle(Pointer - Pos)
+    }
+
+    behavior<Path+exhaust> on Paint {
+        let bodyOffset = TurboOn ? @(-2,0) : @(direction.Y, direction.X)
+        let color = TurboOn ? #0011ff : #ff8800
+        let radius = TurboOn ? 1.2 : 0.1
+        let velocity = -25 * direction
+        Spark(radius=, velocity=, 
+              bodyOffset=, layer=-5, 
+              dissipate=0.3s, splatter=0.4, 
+              color=, bloom=1, luminous=1, shine=0.5)
+    }
+}
+
+fn ship.Halt<Path> {
+    delete behavior<Path+thrust>
+    delete behavior<Path+exhaust>
 }
