@@ -155,14 +155,17 @@ fn ship.Propel<Path> (direction, [body, owner]) {
     }
 
     behavior<Path+exhaust> on Paint {
-        let bodyOffset = TurboOn ? @(-2,0) : @(direction.Y, direction.X)
-        let color = TurboOn ? #0011ff : #ff8800
-        let radius = TurboOn ? 1.2 : 0.1
-        let velocity = -25 * direction
-        Spark(radius=, velocity=, 
-              bodyOffset=, layer=-5, 
-              dissipate=0.3s, splatter=0.4, 
-              color=, bloom=1, luminous=1, shine=0.5)
+        if TurboOn {
+            Spark(radius=1.2, velocity=-25 * direction, 
+                  bodyOffset=@(-2,0), layer=-5, 
+                  dissipate=0.2s, splatter=0.2,
+                  color=#0011ff, bloom=1, luminous=1, shine=0.8)
+        } else {
+            Spark(radius=0.7, velocity=-20 * direction, 
+                  bodyOffset=@(direction.Y, direction.X), 
+                  layer=-5, dissipate=0.2s, splatter=0.2, fade=1,
+                  color=#ff8800, bloom=1, luminous=1, shine=0.5)
+        }
     }
 }
 
