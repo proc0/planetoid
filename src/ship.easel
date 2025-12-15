@@ -17,10 +17,10 @@ pub fn ship.Ship([owner]) {
     ImageSprite(@assets/ship.svg, shading=0.25, shine=0, shadow=0, scale=4, layer=5)
     
     TextSprite(owner.PlayerName, noRotation=true, screenOffset=@(0, 4), layer=-15, ownerColor=true, opacity=0.5, strobe=false, heightPx=22, anchorTop=true)
-    PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20)
+    PointerAimingLine(body=ship, color=#ff0000, opacity=0.4, radius=0.1, layer=-20, glare=0.5)
     
     LimitSpeed(maxSpeed=30)
-    DecayTurnRate(0.5)
+    DecayTurnRate(0.1)
     CollideBoundary
     WrapOutsideBoundary
 
@@ -46,7 +46,7 @@ pub fn ship.Ship([owner]) {
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
         let pointing = @(0, -1)
-        
+         
         behavior<thrust> on BeforePhysics {
             let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
             ApplyImpulse(impulse * Direction(Heading))
@@ -67,12 +67,21 @@ pub fn ship.Ship([owner]) {
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
         let pointing = @(-1, 0)
 
+        behavior<stopRight> on BeforePhysics {
+            if Velocity.X > 0 {
+                Velocity = @(Velocity.X*SHIP_BREAK, Velocity.Y)
+            }
+        }
         // use this to lock into target:
         // ApplyImpulse(impulse * RotateLeft(Pointer - Pos))
         // ApplyTurningImpulse(impulse)
         behavior<strafeLeft> on BeforePhysics {
+            delete behavior<stopRight>
             let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
             ApplyImpulse(impulse * pointing)
+            // ApplyImpulse(impulse * RotateLeft(Pointer - Pos))
+            // ApplyTurningImpulse(impulse)
+            Heading = Angle(Pointer - Pos)
         }
 
         behavior<exhaustRight> on Paint {
@@ -89,10 +98,20 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
         let pointing = @(1, 0)
+
+        behavior<stopLeft> on BeforePhysics {
+            if Velocity.X < 0 {
+                Velocity = @(Velocity.X*SHIP_BREAK, Velocity.Y)
+            }
+        }
         
         behavior<strafeRight> on BeforePhysics {
+            delete behavior<stopLeft>
             let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
             ApplyImpulse(impulse * pointing)
+            // ApplyImpulse(impulse * RotateRight(Pointer - Pos))
+            // ApplyTurningImpulse(impulse)
+            Heading = Angle(Pointer - Pos)
         }
 
         behavior<exhaustLeft> on Paint {
@@ -109,10 +128,18 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
         let pointing = @(0, 1)
+
+        behavior<stopReverse> on BeforePhysics {
+            if Velocity.X < 0 {
+                Velocity = @(Velocity.X*SHIP_BREAK, Velocity.Y)
+            }
+        }
         
         behavior<reverse> on BeforePhysics {
+            delete behavior<stopReverse>
             let impulse = Boosting ? SHIP_BOOST : SHIP_THRUST
             ApplyImpulse(impulse * pointing)
+            Heading = Angle(Pointer - Pos)
         }
 
         behavior<exhaustReverse> on Paint {
