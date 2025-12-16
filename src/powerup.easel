@@ -1,6 +1,7 @@
 pub symbol ShieldPickup
 pub symbol Multishot
 
+signal powerup.NearShip
 field ship.PreviousShield
 
 pub fn powerup.Powerup(pos=@(0,0), type) {
@@ -9,21 +10,35 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     use speed=10
     use luminous=1
 
+    const MAGNET_RADIUS = 8
+    const LIFETIME = 7s
+    const BG_COLOR = #00ffaa
+    
     Body(pos=, velocity=@(Random, speed*Random))
     PolygonCollider(shape=Circle, category=Category:Powerup, collideWith=Category:None, sense=Category:Ship, density=1)
 
     if type == ShieldPickup {    
-        PolygonSprite(shape=Circle, color=#00ffaa, bloom=3, opacity=0.5, shadow=0.5)
-        ImageSprite(@shield.svg, radius=0.85*radius)
+        PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, opacity=0.5)
+        ImageSprite(@shield.svg, radius=0.85*radius, shadow=0.5)
     } else if type == Multishot {
-        PolygonSprite(shape=Circle, color=#00ffaa, opacity=0.5, bloom=3, shadow=0.5)
-        ImageSprite(@triblast.svg, radius=0.85*radius)
+        PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, shading=0.5, opacity=0.5)
+        ImageSprite(@triblast.svg, radius=0.85*radius, shading=0.5, shadow=0.5)
     }
     
     RecoverSpeed
     DecayTurnRate
     DespawnBoundsY
     TeleportBoundsX
+
+    on Tick(0.5s) {
+        let entities = QueryWithinRadius(radius=MAGNET_RADIUS, filter=Category:Ship)
+        if entities.Length {
+            let shipPos = powerup.Pos.Towards(entities[0].Pos, MAGNET_RADIUS)
+            if shipPos != MAGNET_RADIUS {
+                ApplyImpulse(Direction(shipPos - Pos)*200)
+            }
+        }
+    }
     
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Ship) {
@@ -45,4 +60,10 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
             break
         }
     }
+
+    once Tick(LIFETIME-3s) {
+        PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, flicker=1, opacity=0.5, shadow=0.5)
+    }
+    
+    once Tick(LIFETIME) { Expire }
 }

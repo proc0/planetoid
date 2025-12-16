@@ -1,19 +1,17 @@
-// field starfield.OffsetBg
-
 pub fn starfield.Starfield {
     use body=starfield
-    use radius=BOUNDS_RADIUS
+    use radius=1
+    use layer=-5
     
-    Body(
-        pos=@(0, 0),
-    )
+    const count = Random*30 + 20
+    
+    Body(pos=@(0,0))
 
-    repeat 15 {
+    repeat count {
         Spawn star { Star }
     }
-
+    
     with Tick(3s) {
         Spawn star { Star(pos=RandomSpawnTopPos(2)) }
     }
-
 }

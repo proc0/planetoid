@@ -35,6 +35,8 @@ pub fn ship.Enemy(health=5, [owner]) {
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Projectile | Category:Asteroid) {
             Strobe(shine=0.5, dissipate=0.5s)
+
+            // TODO: use that.damage here
             Health -= 1
             
             if Health <= 2 {
