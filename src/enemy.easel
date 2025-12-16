@@ -16,7 +16,7 @@ pub fn ship.Enemy(health=5, [owner]) {
     DespawnBoundsY
 
     once Tick {
-       Heading = RIGHT_ANGLE 
+       Heading = HALF_PI 
     }
 
     on Tick(4s) {

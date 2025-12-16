@@ -1,4 +1,9 @@
-pub const RIGHT_ANGLE = Pi/2
+pub const UP = @(0, -1)
+pub const RIGHT = @(1, 0)
+pub const DOWN = @(0, 1)
+pub const LEFT = @(-1, 0)
+pub const HALF_PI = Pi/2
+pub const NEG_HALF_PI = -Pi/2
 
 pub const BOUNDS_RADIUS = 40
 pub const BOUNDS_WIDTH = BOUNDS_RADIUS*2

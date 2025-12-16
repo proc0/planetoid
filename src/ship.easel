@@ -29,7 +29,7 @@ pub fn ship.Ship([owner]) {
     CollideBounds
 
     once Tick {
-        Heading = -RIGHT_ANGLE 
+        Heading = NEG_HALF_PI 
     }
 
     once Tick(3s) { 
@@ -53,15 +53,15 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(ArrowLeft), ButtonDown(KeyA) {
-        Propel<Leftward>(@(-1, 0))
+        Propel<Leftward>(LEFT)
     }
 
     on ButtonDown(ArrowRight), ButtonDown(KeyD) {
-        Propel<Rightward>(@(1, 0))
+        Propel<Rightward>(RIGHT)
     }
 
     on ButtonDown(ArrowDown), ButtonDown(KeyS) {
-        Propel<Backward>(@(0, 1))
+        Propel<Backward>(DOWN)
     }
 
     on ButtonUp(ArrowUp), ButtonUp(KeyW) {
