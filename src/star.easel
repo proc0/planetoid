@@ -1,4 +1,4 @@
-pub fn star.Star(radius=1, pos=@(Random * BoundaryRadius * PickRandom([1,-1]), Random * BoundaryRadius * PickRandom([1,-1]))) {
+pub fn star.Star(radius=1, pos=RandomSpawnPos) {
     use body=star
     use color=Random.BlendHue(#1d3f90, #cc7c20).Darken(0.9)
     
@@ -11,5 +11,5 @@ pub fn star.Star(radius=1, pos=@(Random * BoundaryRadius * PickRandom([1,-1]), R
         Spark(color=#222222, luminous=1, layer=-40, radius=Random*Random)
     }
     
-    DespawnOutsideBoundary
+    DespawnBounds
 }

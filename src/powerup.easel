@@ -22,8 +22,8 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     
     RecoverSpeed
     DecayTurnRate
-    WrapOutsideBoundary
-    DespawnOutsideVerticalBoundary
+    DespawnBoundsY
+    TeleportBoundsX
     
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Ship) {

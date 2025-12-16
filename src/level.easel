@@ -64,7 +64,7 @@ pub fn this.Level1([owner]) {
         const MaxAliens=3
         if QueryCount(filter=Category:EnemyShip) < MaxAliens {
             Spawn ship {
-                EnemyShip(health=5)
+                Enemy(health=5)
 
                 // once BeforeDespawn {
                 //     World.BeginLevel(2)

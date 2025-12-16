@@ -1,20 +1,19 @@
 prop ship.Health
 
-pub fn ship.EnemyShip(health=5, [owner]) {
+pub fn ship.Enemy(health=5, [owner]) {
     use body=ship
     use radius=1
     use speed=8
     
     Health = health
-    // TODO: refactor the position into a function that generates spawn from top
-    Body(pos=@(Random * (BoundaryRadius - 10) * PickRandom([1,-1]), -BoundaryRadius - radius), velocity=@(0, speed))
+    Body(pos=RandomSpawnTopPos, velocity=@(0, speed))
     PolygonCollider(shape=Circle(3), category=Category:EnemyShip, density=1)
 
     ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
     
     RecoverSpeed
-    WrapOutsideBoundary
-    DespawnOutsideVerticalBoundary
+    TeleportBoundsX
+    DespawnBoundsY
 
     once Tick {
        Heading = RIGHT_ANGLE 
@@ -28,7 +27,7 @@ pub fn ship.EnemyShip(health=5, [owner]) {
         let hero = QueryNearest(filter=Category:Ship)
         if hero {
             Spawn projectile {
-                EnergonBoom(ship=, target=hero.Pos)
+                Bomb(ship=, target=hero.Pos)
             }
         }
     }

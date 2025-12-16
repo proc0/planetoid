@@ -1,7 +1,7 @@
 pub const RIGHT_ANGLE = Pi/2
 
-pub const BoundaryRadius = 40
-pub const BoundaryWidth = BoundaryRadius*2
+pub const BOUNDS_RADIUS = 40
+pub const BOUNDS_WIDTH = BOUNDS_RADIUS*2
 
 pub const SHIP_PROPEL = 3
 pub const SHIP_TURBO = 9

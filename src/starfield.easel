@@ -2,27 +2,18 @@
 
 pub fn starfield.Starfield {
     use body=starfield
-    use radius=60
+    use radius=BOUNDS_RADIUS
     
     Body(
-        pos=@(Random*30*PickRandom([1,-1]),30),
+        pos=@(0, 0),
     )
 
-    // on Paint {
-    //     OffsetBg -= 0.01
-    //     ImageSprite(@assets/starfield.jpg, layer=-100, screenOffset=@(0,OffsetBg))   
-    // }
-    
     repeat 15 {
-        Spawn star {
-            Star
-        }
+        Spawn star { Star }
     }
 
     with Tick(3s) {
-        Spawn star {
-            Star(pos=@(Random * BoundaryRadius * PickRandom([1,-1]), -BoundaryRadius-1))
-        }
+        Spawn star { Star(pos=RandomSpawnTopPos(2)) }
     }
 
 }

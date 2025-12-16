@@ -14,7 +14,7 @@ pub fn ship.Ship([owner]) {
     use radius=1
     use layer=5
     
-    Body(pos = @(0, BoundaryRadius - 16))
+    Body(pos = @(0, BOUNDS_RADIUS - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
     ImageSprite<invulnerable>(@assets/ship.svg, scale=4, overlay=1, flicker=1, ownerColor=1, opacity=0.7)
@@ -24,9 +24,9 @@ pub fn ship.Ship([owner]) {
     TextSprite(owner.PlayerName, layer=4, heightPx=22, bodyOffset=@(0, 4), anchorTop=true, noRotation=true, ownerColor=true, opacity=0.5)
     
     LimitSpeed(maxSpeed=SHIP_MAX_SPEED)
-    DecayTurnRate(SHIP_MAX_SPEED)
-    CollideBoundary
-    WrapOutsideBoundary
+    DecayTurnRate(SHIP_DECAY_TURN)
+    TeleportBoundsX
+    CollideBounds
 
     once Tick {
         Heading = -RIGHT_ANGLE 
@@ -81,22 +81,22 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(KeySpacebar), ButtonDown(Click) {
-        behavior<laser> {
+        behavior<fire> {
             loop {
+                const angle = 0.03rev
+                let initial = -(angle * (BlastCount - 1)) / 2
+                for index in Range(0, BlastCount) {
+                    Spawn projectile {
+                        Projectile(source=ship, offset=initial + index * angle)
+                    }
+                }
+
                 if(BlastCount > 1) {
                     Hear(@assets/basic_laser3.mp3)
                 } else {
                     surprise {
                         Hear(@assets/basic_laser.mp3),
                         Hear(@assets/basic_laser2.mp3),
-                    }
-                }
-                
-                const angle = 0.03rev
-                let initial = -(angle * (BlastCount - 1)) / 2
-                for index in Range(0, BlastCount) {
-                    Spawn projectile {
-                        Projectile(source=ship, offset=initial + index * angle)
                     }
                 }
                 // TODO: make this a powerup
@@ -106,7 +106,7 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonUp(Click) {
-        delete behavior<laser>
+        delete behavior<fire>
     }
 
     await ReadyPlayer

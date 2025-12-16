@@ -1,8 +1,8 @@
 pub prop owner.Score = 0
 
-pub game fn World.Main(maxHumanPlayers=5) {
+pub game fn World.Main(maxHumanPlayers=3) {
     SolidBackground(color=#000000)
-    Camera(@(0,0), radius=BoundaryRadius)
+    Camera(@(0,0), radius=BOUNDS_RADIUS)
     Viewport(aspectRatio=1)
 
     Spawn starfield {
@@ -20,7 +20,7 @@ pub game fn World.Main(maxHumanPlayers=5) {
 
         TopContent {
             with Score {
-                HStack(width=BoundaryWidth, align=Align:Right, hPadding=8) {
+                HStack(width=BOUNDS_WIDTH, align=Align:Right, hPadding=8) {
                     H1 { %(Score) }
                 }
             }
