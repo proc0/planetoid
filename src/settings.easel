@@ -11,6 +11,7 @@ pub const BOUNDS_RADIUS = 40
 pub const BOUNDS_WIDTH = BOUNDS_RADIUS*2
 pub const TOP = -BOUNDS_RADIUS
 
+pub const SHIP_HEALTH = 10
 pub const SHIP_PROPEL = 3
 pub const SHIP_TURBO = 9
 pub const SHIP_BRAKE = 0.2
@@ -19,3 +20,8 @@ pub const SHIP_DECAY_TURN = 0.1
 pub const SHIP_FIRE_RATE = 0.3s
 
 pub const POWERUP_DROP_RATE = 0.3
+
+pub const ENEMY_BOSS_HEALTH = 55
+pub const ENEMY_LEADER_HEALTH = 25
+pub const ENEMY_CRAFT_HEALTH = 6
+pub const ENEMY_DRONE_HEALTH = 2

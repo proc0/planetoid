@@ -1,5 +1,6 @@
 pub collect ship.BlastCount = 1
 pub field ship.ShieldOn = false
+pub prop ship.Health
 
 signal ship.ReadyPlayer
 field ship.TurboOn = false
@@ -10,11 +11,12 @@ symbol Leftward
 symbol Backward
 
 pub fn ship.Ship([owner]) {
-    use body=ship
-    use radius=1
-    use layer=5
+    use body = ship
+    use radius = 1
+    use layer = 5
+    Health = SHIP_HEALTH
     
-    Body(pos = @(0, BOUNDS_RADIUS - 16))
+    Body(pos=@(0, BOUNDS_RADIUS - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
     ImageSprite<invulnerable>(@assets/ship.svg, scale=4, overlay=1, flicker=1, ownerColor=1, opacity=0.7)
@@ -28,6 +30,8 @@ pub fn ship.Ship([owner]) {
     TeleportBoundsX
     CollideBounds
 
+    DisplayHealth
+    
     once Tick {
         Heading = NEG_HALF_PI 
     }
@@ -114,24 +118,42 @@ pub fn ship.Ship([owner]) {
     
     on BeforeCollide that {
         if ShieldOn { return }
-        
-        if that.Category.Overlaps(Category:Asteroid | Category:EnemyShip | Category:Explosion) {
-            Hear(@assets/explosion1.mp3)
 
-            // TODO: abstract explosions
-            repeat 5 {
-                Spark(speed=10, dissipate=0.75s, feather=1, splatter=1, color=#ffffff, bloom=3, luminous=1)
-            }
+        if that.Category.Overlaps(Category:Asteroid | Category:EnemyShip | Category:Explosion) {
+            Health -= 3
             
-            Transmission(audience=Audience:All) {
-                P {
-                    PlayerNameDisplay
-                    " was destroyed."
+            DisplayHealth
+            
+            if Health <= 0 {
+                Hear(@assets/explosion1.mp3)
+    
+                // TODO: abstract explosions
+                repeat 5 {
+                    Spark(speed=10, dissipate=0.75s, feather=1, splatter=1, color=#ffffff, bloom=3, luminous=1)
                 }
+                
+                Transmission(audience=Audience:All) {
+                    P { 
+                        PlayerNameDisplay
+                        " was destroyed."
+                    }
+                }
+                
+                Expire
+                break
             }
             
-            Expire
-            break
+            let opacity = 0.7
+            behavior<hit> on Paint {            
+                ImageSprite(@assets/ship.svg, color=#ff0000, scale=4, opacity=, luminous=0.3)
+                Vignette(color=#ff0000, opacity=opacity-0.3, power=40)
+
+                opacity -= 0.03
+            }
+            
+            once Tick(0.25s) {
+                delete behavior<hit>
+            }
         }
     }
 }

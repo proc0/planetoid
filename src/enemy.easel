@@ -1,11 +1,20 @@
-prop ship.Health
+pub symbol Craft
+pub symbol Drone
+pub symbol Leader
 
-pub fn ship.Enemy(health=5, [owner]) {
-    use body=ship
-    use radius=1
-    use speed=8
+pub fn ship.Enemy(type=Drone, [owner]) {
+    use body = ship
+    use radius = 1
+    use speed = 8
     
-    Health = health
+    Health = ENEMY_DRONE_HEALTH
+    
+    if type == Craft {
+        Health = ENEMY_CRAFT_HEALTH
+    } else if type == Leader {
+        Health = ENEMY_LEADER_HEALTH
+    }
+    
     Body(pos=RandomSpawnTopPos, velocity=@(0, speed))
     PolygonCollider(shape=Circle(3), category=Category:EnemyShip, density=1)
 

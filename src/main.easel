@@ -18,6 +18,7 @@ pub game fn World.Main(maxHumanPlayers=3) {
             }
         }
 
+        
         TopContent {
             with Score {
                 HStack(width=BOUNDS_WIDTH, align=Align:Right, hPadding=8) {
