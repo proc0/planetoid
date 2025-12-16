@@ -1,15 +1,17 @@
-pub fn star.Star(radius=Random/2+0.1, pos=RandomSpawnPos) {
+pub fn star.Star(radius=Random/3+0.1, pos=RandomSpawnPos) {
     use body = star
+    use layer = -10
     
-    const hue = Random.BlendHue(#1d3f90, #cc7c20).Darken(0.3)
+    const hue = Random.BlendHue(#1d3f90, #cc7c20)
     use color = PickRandom([Random.BlendHue(hue, #222222),#222222])
-    const blink = Random*5s + 0.5s
+    const blink = Random*3s + 0.5s
+    const dissipate = blink - 0.5s
     
     Body(pos=, velocity=@(0,0.5))
-    PolygonSprite(shape=Circle, feather=radius+0.3, bloom=1, shine=0.6, luminous=0.5)
+    PolygonSprite(shape=Circle, feather=radius+0.3, bloom=1, shine=0.3, luminous=0.5)
     
     on Tick(blink) {
-        Strobe(dissipate=blink, fade=0.6, shine=1, taper=0.3)
+        Strobe(dissipate=, fade=0.5, shine=1, taper=0.5)
     }
     
     DespawnBounds

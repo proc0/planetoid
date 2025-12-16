@@ -27,7 +27,7 @@ pub game fn World.Main(maxHumanPlayers=3) {
         }
 
         Level
-        BeginLevel(0)
+        BeginLevel(LEVEL_START)
         
         once AfterEliminated {
             OverlayContent {
