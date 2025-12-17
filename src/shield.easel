@@ -23,7 +23,6 @@ pub fn shield.Shield(ship, energy=POWERUP_INIT_SHIELD_ENERGY) {
             if Energy <= 0 {
                 ship.PreviousShield = null
                 Expire
-                break
             }
         }
     }
