@@ -1,5 +1,4 @@
 pub collect ship.BlastCount = 1
-pub field ship.ShieldOn = false
 pub prop ship.Health
 
 signal ship.ReadyPlayer
@@ -91,7 +90,7 @@ pub fn ship.Ship([owner]) {
                 let initial = -(angle * (BlastCount - 1)) / 2
                 for index in Range(0, BlastCount) {
                     Spawn weapon {
-                        Laser(source=ship, offset=initial + index * angle)
+                        Laser(source=ship, damage=3, offset=initial + index * angle)
                     }
                 }
 
@@ -117,10 +116,13 @@ pub fn ship.Ship([owner]) {
     delete ImageSprite<invulnerable>
     
     on BeforeCollide that {
-        if ShieldOn { return }
+        if Energy > 0 {
+            return 
+        }
 
         if that.Category.Overlaps(Category:Asteroid | Category:Enemy | Category:Explosion | Category:Projectile) {
-            Health -= 3
+            
+            Health -= Settings[that.Category.ToString].damage
             
             DisplayHealth
             

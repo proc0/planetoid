@@ -1,9 +1,15 @@
 prop asteroid.Health
+field asteroid.Damage
 
-pub fn asteroid.Asteroid(radius=4, pos=RandomSpawnTopPos(4), speed=30*Random, health=10, dissipate=0.75s, color=#444444, generation=0, parent?) {
+// pub fn asteroid.GetDamage -> Number {
+//     return Damage
+// }
+
+pub fn asteroid.Asteroid(radius=4, pos=RandomSpawnTopPos(4), speed=30*Random, health=10, damage=4, dissipate=0.75s, color=#444444, generation=0, parent?) {
     use body = asteroid
     use layer=5
     Health = health
+    Damage = damage
     
     Body(pos=, velocity=@(speed * Random * PickRandom([0.2,-0.2]), speed))
     PolygonCollider(shape=Circle, category=Category:Asteroid)
@@ -14,6 +20,8 @@ pub fn asteroid.Asteroid(radius=4, pos=RandomSpawnTopPos(4), speed=30*Random, he
 
     on BeforeCollide that {
         repeat 5 { Spark(color=#222222, shine=0, splatter=1, dissipate=0.5s, radius=Random, velocity=Velocity*RandomVector) }
+
+        Health -= Settings[that.Category.ToString].damage
         
         const MaxGenerations = 2
         if Health <= 0 {
@@ -29,14 +37,5 @@ pub fn asteroid.Asteroid(radius=4, pos=RandomSpawnTopPos(4), speed=30*Random, he
                 }
             }
         }
-        
-        // TODO add damage prop on ship, projectile and use it here
-        if that.Category.Overlaps(Category:Asteroid) {
-            Health -= 8
-            // Velocity += that.Velocity 
-        } else {
-            Health -= 3
-        }
     }
-
 }

@@ -1,0 +1,11 @@
+field explosion.Damage
+
+pub fn explosion.Explosion(pos=@(0,0), damage=23) {
+    use body=explosion
+    Damage = damage
+    
+    Body(pos=, immovable=true)
+    PolygonCollider(shape=Circle(6), category=Category:Explosion, sense=Category:Tangible)
+
+    once AfterPhysics { Expire }
+}

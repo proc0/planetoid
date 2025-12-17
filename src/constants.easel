@@ -11,17 +11,37 @@ pub const BOUNDS_RADIUS = 40
 pub const BOUNDS_WIDTH = BOUNDS_RADIUS*2
 pub const TOP = -BOUNDS_RADIUS
 
-pub const SHIP_HEALTH = 10
+pub const SHIP_HEALTH = 15
 pub const SHIP_PROPEL = 3
 pub const SHIP_TURBO = 9
 pub const SHIP_BRAKE = 0.2
 pub const SHIP_MAX_SPEED = 30
 pub const SHIP_DECAY_TURN = 0.1
 pub const SHIP_FIRE_RATE = 0.3s
-pub const SHIELD_ENERGY = 10
+
+pub const POWERUP_INIT_SHIELD_ENERGY = 7
+pub const POWERUP_SHIELD_ENERGY = 3
 // pub const POWERUP_DROP_RATE = 0.3
 
 // pub const ENEMY_BOSS_HEALTH = 55
 // pub const ENEMY_LEADER_HEALTH = 25
 // pub const ENEMY_FIGHTER_HEALTH = 11
 // pub const ENEMY_DRONE_HEALTH = 2
+
+pub const Settings = {
+    "Category:Weapon"={
+        damage = 2
+    },
+    "Category:Projectile"={
+        damage = 2
+    },
+    "Category:Asteroid"={
+        damage = 3
+    },
+    "Category:Enemy"={
+        damage = 1
+    },
+    "Category:Explosion"={
+        damage = 4
+    }
+}

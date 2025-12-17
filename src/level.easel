@@ -46,10 +46,6 @@ pub fn this.Level1([owner]) {
                 Asteroid
             }
         }
-
-        Spawn ship {
-            Enemy
-        }
     }
 
     // with Tick(5s) {
@@ -68,7 +64,10 @@ pub fn this.Level1([owner]) {
         const MaxEnemies=3
         if QueryCount(filter=Category:Enemy) < MaxEnemies {
             Spawn ship {
-                EnemyFighter(ship)
+                surprise {
+                    Enemy,
+                    EnemyFighter(ship)
+                }
 
                 // once BeforeDespawn {
                 //     World.BeginLevel(2)

@@ -2,7 +2,6 @@ pub symbol EnergyShield
 pub symbol MultiLaser
 
 signal powerup.NearShip
-field ship.PreviousShield
 
 pub fn powerup.Powerup(pos=@(0,0), type) {
     use body=powerup,
@@ -45,9 +44,12 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
             use ship = that
 
             if type == EnergyShield {
-                PreviousShield.Expire
-                PreviousShield = ship.Subspawn shield {
-                    Shield(ship=, energy=ship.Health >= SHIELD_ENERGY ? SHIELD_ENERGY : ship.Health)
+                if !PreviousShield {                
+                    PreviousShield = ship.Subspawn shield {
+                        Shield(ship=, energy=ship.Health >= POWERUP_INIT_SHIELD_ENERGY ? POWERUP_INIT_SHIELD_ENERGY : ship.Health)
+                    }
+                } else {
+                    ship.Energy += POWERUP_SHIELD_ENERGY
                 }
             } else if type == MultiLaser {
                 ship.Subspawn {

@@ -62,7 +62,7 @@ pub fn ship.Enemy(
         let hero = QueryNearest(filter=Category:Ship)
         if hero {
             Spawn projectile {
-                Bomb(ship=, target=hero.Pos)
+                Bomb(ship=, damage=15, target=hero.Pos)
             }
         }
     }
@@ -70,15 +70,13 @@ pub fn ship.Enemy(
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Weapon | Category:Asteroid) {
             Strobe(shine=0.5, dissipate=0.5s)
-
-            // TODO: use that.damage here
-            Health -= 1
+            
+            Health -= Settings[that.Category.ToString].damage
 
             // TODO: just use overlay red for damaged ship to abstract to all types (when svg is in place)
             // if Health <= 2 {
             //     ImageSprite(@assets/alien_ship_body.png, color=#ff0000, luminous=0.4, overlay=10, shine=0.2, opacity=0.7, shading=0, shadow=0, scale=5)
             // }
-            
             if Health <= 0 {
                 Hear(@assets/explosion2.mp3)
                 

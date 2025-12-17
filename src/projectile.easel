@@ -1,16 +1,20 @@
-pub fn projectile.Bomb(ship, target) {
+field projectile.Damage
+
+pub fn projectile.Bomb(ship, target, damage=3) {
     use body=projectile
     use speed=12, radius=0.5, turnRate=0.1rev
     use color=#ffcc00, luminous=1, layer=-5
     use aoe=6
     use lifetime=1s * Distance(ship.Pos, target) / speed
 
+    Damage = damage
+
     Body(bullet=true, pos=ship.Pos, velocity=speed*Direction(target-pos))
 
     PolygonSprite(shape=Equilateral(numPoints=4), glare=0.7, bloom=3)
     PolygonSprite(shape=Circle(6), crater=0.85, color=color.Fade(0.95))
     PolygonCollider(shape=Circle, category=Category:Projectile, 
-                    collideWith=Category:Ship | Category:Projectile | Category:Asteroid)
+                    collideWith=Category:Ship | Category:Projectile | Category:Asteroid | Category:Weapon)
 
     DespawnBounds
     
@@ -26,12 +30,7 @@ pub fn projectile.Bomb(ship, target) {
         Spark(radius=6, dissipate=0.5s, shine=0.2, bloom=3, feather=1, glare=0.3)
 
         Spawn explosion {
-            use body=explosion
-
-            Body(pos=projectile.Pos, immovable=true)
-            PolygonCollider(shape=Circle(6), category=Category:Explosion, sense=Category:Tangible)
-
-            once AfterPhysics { Expire }
+            Explosion(pos=Pos)
         }
     }
 }
