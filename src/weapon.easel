@@ -1,7 +1,6 @@
-field weapon.Damage
+pub tangible category Category:Weapon
 
-
-pub fn weapon.Laser(source, damage=1, offset=0) {
+pub fn weapon.Laser(source, offset=0) {
     use body=weapon
     use radius=0.25
     use layer=4
@@ -9,8 +8,7 @@ pub fn weapon.Laser(source, damage=1, offset=0) {
     use color=#ffffff
     use ownerColor=true
     use luminous=1
-    Damage = damage
-    
+
     Body(bullet=true, pos=source.Pos, velocity=speed * Direction(source.Heading + offset) * 2)
     PolygonCollider(shape=Circle, category=Category:Weapon, parent=source)
 

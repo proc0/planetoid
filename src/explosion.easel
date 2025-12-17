@@ -1,3 +1,5 @@
+pub tangible category Category:Explosion
+
 field explosion.Damage
 
 pub fn explosion.Explosion(pos=@(0,0), damage=23) {

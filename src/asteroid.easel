@@ -1,9 +1,7 @@
+pub tangible category Category:Asteroid
+
 prop asteroid.Health
 field asteroid.Damage
-
-// pub fn asteroid.GetDamage -> Number {
-//     return Damage
-// }
 
 pub fn asteroid.Asteroid(radius=4, pos=RandomSpawnTopPos(4), speed=30*Random, health=10, damage=4, dissipate=0.75s, color=#444444, generation=0, parent?) {
     use body = asteroid

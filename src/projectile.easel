@@ -1,13 +1,11 @@
-field projectile.Damage
+pub tangible category Category:Projectile
 
-pub fn projectile.Bomb(ship, target, damage=3) {
+pub fn projectile.Bomb(ship, target) {
     use body=projectile
     use speed=12, radius=0.5, turnRate=0.1rev
     use color=#ffcc00, luminous=1, layer=-5
     use aoe=6
     use lifetime=1s * Distance(ship.Pos, target) / speed
-
-    Damage = damage
 
     Body(bullet=true, pos=ship.Pos, velocity=speed*Direction(target-pos))
 

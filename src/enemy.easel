@@ -1,3 +1,5 @@
+pub tangible category Category:Enemy
+
 pub symbol Drone
 pub symbol Fighter
 pub symbol Leader
@@ -62,7 +64,7 @@ pub fn ship.Enemy(
         let hero = QueryNearest(filter=Category:Ship)
         if hero {
             Spawn projectile {
-                Bomb(ship=, damage=15, target=hero.Pos)
+                Bomb(ship=, target=hero.Pos)
             }
         }
     }

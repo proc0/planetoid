@@ -1,3 +1,5 @@
+pub tangible category Category:Ship
+
 pub collect ship.BlastCount = 1
 pub prop ship.Health
 
@@ -90,7 +92,7 @@ pub fn ship.Ship([owner]) {
                 let initial = -(angle * (BlastCount - 1)) / 2
                 for index in Range(0, BlastCount) {
                     Spawn weapon {
-                        Laser(source=ship, damage=3, offset=initial + index * angle)
+                        Laser(source=ship, offset=initial + index * angle)
                     }
                 }
 
