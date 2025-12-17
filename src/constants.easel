@@ -21,12 +21,6 @@ pub const SHIP_FIRE_RATE = 0.3s
 
 pub const POWERUP_INIT_SHIELD_ENERGY = 7
 pub const POWERUP_SHIELD_ENERGY = 3
-// pub const POWERUP_DROP_RATE = 0.3
-
-// pub const ENEMY_BOSS_HEALTH = 55
-// pub const ENEMY_LEADER_HEALTH = 25
-// pub const ENEMY_FIGHTER_HEALTH = 11
-// pub const ENEMY_DRONE_HEALTH = 2
 
 pub const Settings = {
     "Category:Weapon"={

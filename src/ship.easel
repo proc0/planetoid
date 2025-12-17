@@ -21,7 +21,7 @@ pub fn ship.Ship([owner]) {
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
     ImageSprite<invulnerable>(@assets/ship.svg, scale=4, overlay=1, flicker=1, ownerColor=1, opacity=0.7)
-    ImageSprite(@assets/ship.svg, scale=4, shading=0.3)
+    ImageSprite(@assets/ship.svg, scale=4, ownerColor=0.5, shading=0.3)
     
     PointerAimingLine(body=ship, layer=4, radius=0.1, color=#ff0000, opacity=0.5, glare=0.5)
     TextSprite(owner.PlayerName, layer=4, heightPx=22, bodyOffset=@(0, 4), anchorTop=true, noRotation=true, ownerColor=true, opacity=0.5)
@@ -121,7 +121,7 @@ pub fn ship.Ship([owner]) {
         if Energy > 0 {
             return 
         }
-
+        
         if that.Category.Overlaps(Category:Asteroid | Category:Enemy | Category:Explosion | Category:Projectile) {
             
             Health -= Settings[that.Category.ToString].damage

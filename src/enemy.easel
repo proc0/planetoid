@@ -34,16 +34,17 @@ pub fn ship.Enemy(
     use speed = 8
     
     Health = health
+    const maxHealth = health
     
     Body(pos=RandomSpawnTopPos, velocity=@(0, speed))
     PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
 
     if type == Drone {
-        ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
+        ImageSprite(@assets/ship.svg, color=#ee1111, shading=0.3, shadow=0, scale=4)
     } else if type == Fighter {
-        ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
+        ImageSprite(@assets/ship.svg, color=#ee11ff, shading=0.3, shadow=0, scale=4)
     } else if type == Leader {
-        ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)   
+        ImageSprite(@assets/ship.svg, color=#eeee11, shading=0.3, shadow=0, scale=4)   
     } else {
         PolygonSprite(shape=Circle, color=#ff0000)        
     }
@@ -75,10 +76,18 @@ pub fn ship.Enemy(
             
             Health -= Settings[that.Category.ToString].damage
 
-            // TODO: just use overlay red for damaged ship to abstract to all types (when svg is in place)
-            // if Health <= 2 {
-            //     ImageSprite(@assets/alien_ship_body.png, color=#ff0000, luminous=0.4, overlay=10, shine=0.2, opacity=0.7, shading=0, shadow=0, scale=5)
-            // }
+            if Health <= maxHealth/3 {
+                if type == Drone {
+                    ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
+                } else if type == Fighter {
+                    ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
+                } else if type == Leader {
+                    ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)   
+                } else {
+                    PolygonSprite(shape=Circle, color=#ff0000)        
+                }
+            }
+            
             if Health <= 0 {
                 Hear(@assets/explosion2.mp3)
                 

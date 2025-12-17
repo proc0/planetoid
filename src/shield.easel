@@ -22,10 +22,21 @@ pub fn shield.Shield(ship, energy=POWERUP_INIT_SHIELD_ENERGY) {
 
             Energy -= Settings[that.Category.ToString].damage
 
-            if Energy <= 0 {
-                ship.PreviousShield = null
-                Expire
+            let opacity = 0.7
+            behavior<hit> on Paint {            
+                Vignette(color=#0022ff, opacity=opacity-0.3, power=40)
+    
+                opacity -= 0.03
             }
+            
+            once Tick(0.25s) {
+                delete behavior<hit>
+                if Energy <= 0 {
+                    ship.PreviousShield = null
+                    Expire
+                }
+            } 
+            
         }
     }
 }
