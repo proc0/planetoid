@@ -1,25 +1,37 @@
-pub fn projectile.Projectile(source, offset=0) {
+pub fn projectile.Bomb(ship, target) {
     use body=projectile
-    use radius=0.25
-    use layer=4
-    use speed=50
-    use color=#ffffff
-    use ownerColor=true
-    use luminous=1
+    use speed=12, radius=0.5, turnRate=0.1rev
+    use color=#ffcc00, luminous=1, layer=-5
+    use aoe=6
+    use lifetime=1s * Distance(ship.Pos, target) / speed
 
-    Body(bullet=true, pos=source.Pos, velocity=speed * Direction(source.Heading + offset) * 2)
-    PolygonCollider(shape=Circle, category=Category:Projectile, parent=source)
+    Body(bullet=true, pos=ship.Pos, velocity=speed*Direction(target-pos))
 
-    on Paint {
-        Streak(dissipate=0.1s, bloom=2, bloomAlpha=1, glare=1, shadow=0.5)
-    }
+    PolygonSprite(shape=Equilateral(numPoints=4), glare=0.7, bloom=3)
+    PolygonSprite(shape=Circle(6), crater=0.85, color=color.Fade(0.95))
+    PolygonCollider(shape=Circle, category=Category:Projectile, 
+                    collideWith=Category:Ship | Category:Projectile | Category:Asteroid)
+
+    DespawnBounds
+    
+    once Tick(lifetime) { Expire }
 
     once BeforeCollide that {
         Strobe(shine=1, dissipate=0.5s)
         repeat 5 { Spark(shine=0.5, splatter=1, dissipate=0.5s) }
-        
         Expire
     }
 
-    once Tick(1.5s) { Expire }
+    once BeforeDespawn {
+        Spark(radius=6, dissipate=0.5s, shine=0.2, bloom=3, feather=1, glare=0.3)
+
+        Spawn explosion {
+            use body=explosion
+
+            Body(pos=projectile.Pos, immovable=true)
+            PolygonCollider(shape=Circle(6), category=Category:Explosion, sense=Category:Tangible)
+
+            once AfterPhysics { Expire }
+        }
+    }
 }

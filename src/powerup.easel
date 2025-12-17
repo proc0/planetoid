@@ -1,5 +1,5 @@
-pub symbol ShieldPickup
-pub symbol Multishot
+pub symbol EnergyShield
+pub symbol MultiLaser
 
 signal powerup.NearShip
 field ship.PreviousShield
@@ -10,17 +10,17 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     use speed=10
     use luminous=1
 
-    const MAGNET_RADIUS = 8
+    const MAGNET_RADIUS = 12
     const LIFETIME = 7s
     const BG_COLOR = #00ffaa
     
     Body(pos=, velocity=@(Random, speed*Random))
     PolygonCollider(shape=Circle, category=Category:Powerup, collideWith=Category:None, sense=Category:Ship, density=1)
 
-    if type == ShieldPickup {    
+    if type == EnergyShield {    
         PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, opacity=0.5)
         ImageSprite(@shield.svg, radius=0.85*radius, shadow=0.5)
-    } else if type == Multishot {
+    } else if type == MultiLaser {
         PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, shading=0.5, opacity=0.5)
         ImageSprite(@triblast.svg, radius=0.85*radius, shading=0.5, shadow=0.5)
     }
@@ -30,12 +30,12 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     DespawnBoundsY
     TeleportBoundsX
 
-    on Tick(0.5s) {
+    on Tick(0.1s) {
         let entities = QueryWithinRadius(radius=MAGNET_RADIUS, filter=Category:Ship)
         if entities.Length {
             let shipPos = powerup.Pos.Towards(entities[0].Pos, MAGNET_RADIUS)
             if shipPos != MAGNET_RADIUS {
-                ApplyImpulse(Direction(shipPos - Pos)*200)
+                ApplyImpulse(Direction(shipPos - Pos)*250)
             }
         }
     }
@@ -44,12 +44,12 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
         if that.Category.Overlaps(Category:Ship) {
             use ship = that
 
-            if type == ShieldPickup {
+            if type == EnergyShield {
                 PreviousShield.Expire
                 PreviousShield = ship.Subspawn shield {
-                    Shield(ship=)
+                    Shield(ship=, energy=ship.Health >= SHIELD_ENERGY ? SHIELD_ENERGY : ship.Health)
                 }
-            } else if type == Multishot {
+            } else if type == MultiLaser {
                 ship.Subspawn {
                     once Tick(10s) { Expire }
                     give BlastCount(3)

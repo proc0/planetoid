@@ -1,24 +1,50 @@
-pub symbol Craft
 pub symbol Drone
+pub symbol Fighter
 pub symbol Leader
+pub symbol None
 
-pub fn ship.Enemy(type=Drone, [owner]) {
+pub fn EnemyDrone(ship, [owner]) {
+    Enemy(type=Drone, health=2)
+}
+
+pub fn EnemyFighter(ship, [owner]) {
+    Enemy(
+        type=Fighter, 
+        health=11,
+        fireRate=2s,
+        killScore=250,
+    )
+}
+
+pub fn EnemyLeader(ship, [owner]) {
+    Enemy(type=Leader, health=25)
+}
+
+pub fn ship.Enemy(
+    type=None, 
+    health=1,
+    fireRate=2s,
+    killScore=50,
+    dropRate=0.3,
+    [owner]) {
     use body = ship
     use radius = 1
     use speed = 8
     
-    Health = ENEMY_DRONE_HEALTH
-    
-    if type == Craft {
-        Health = ENEMY_CRAFT_HEALTH
-    } else if type == Leader {
-        Health = ENEMY_LEADER_HEALTH
-    }
+    Health = health
     
     Body(pos=RandomSpawnTopPos, velocity=@(0, speed))
-    PolygonCollider(shape=Circle(3), category=Category:EnemyShip, density=1)
+    PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
 
-    ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
+    if type == Drone {
+        ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
+    } else if type == Fighter {
+        ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)
+    } else if type == Leader {
+        ImageSprite(@assets/alien_ship_body.png, shading=0.25, shadow=0, scale=5)   
+    } else {
+        PolygonSprite(shape=Circle, color=#ff0000)        
+    }
     
     RecoverSpeed
     TeleportBoundsX
@@ -32,7 +58,7 @@ pub fn ship.Enemy(type=Drone, [owner]) {
         Velocity = @(0, Speed*Random)
     }
 
-    on Tick(2s) {
+    on Tick(fireRate) {
         let hero = QueryNearest(filter=Category:Ship)
         if hero {
             Spawn projectile {
@@ -42,15 +68,16 @@ pub fn ship.Enemy(type=Drone, [owner]) {
     }
 
     on BeforeCollide that {
-        if that.Category.Overlaps(Category:Projectile | Category:Asteroid) {
+        if that.Category.Overlaps(Category:Weapon | Category:Asteroid) {
             Strobe(shine=0.5, dissipate=0.5s)
 
             // TODO: use that.damage here
             Health -= 1
-            
-            if Health <= 2 {
-                ImageSprite(@assets/alien_ship_body.png, color=#ff0000, luminous=0.4, overlay=10, shine=0.2, opacity=0.7, shading=0, shadow=0, scale=5)
-            }
+
+            // TODO: just use overlay red for damaged ship to abstract to all types (when svg is in place)
+            // if Health <= 2 {
+            //     ImageSprite(@assets/alien_ship_body.png, color=#ff0000, luminous=0.4, overlay=10, shine=0.2, opacity=0.7, shading=0, shadow=0, scale=5)
+            // }
             
             if Health <= 0 {
                 Hear(@assets/explosion2.mp3)
@@ -59,16 +86,18 @@ pub fn ship.Enemy(type=Drone, [owner]) {
                     Spark(radius=4, color=#fbec8e, luminous=1, bloom=3, feather=1, dissipate=0.75s, splatter=1, speed=10)
                 }
                 
-                if Random > 1-POWERUP_DROP_RATE {
+                if Random > 1-dropRate {
                     Spawn powerup {
                         surprise {                
-                            Powerup(pos=Pos, type=ShieldPickup),
-                            Powerup(pos=Pos, type=Multishot),
+                            Powerup(pos=Pos, type=EnergyShield),
+                            Powerup(pos=Pos, type=MultiLaser),
                         }
                     }
                 }
 
-                owner.Score += 50
+                if that.Category == Category:Weapon {
+                    owner.Score += killScore
+                }
                 
                 Expire
                 break

@@ -1,30 +1,31 @@
-pub fn shield.Shield(ship) {
+pub prop ship.Energy
+
+pub fn shield.Shield(ship, energy=SHIELD_ENERGY) {
     use body=ship
     use owner=ship.Owner
     use radius=3
     use luminous=1
     use duration=15s
+
+    Energy = energy
     
     PolygonCollider(shape=Circle, category=Category:Shield, density=0)
-
+    PolygonSprite(layer=20, shape=Circle(5), color=#0022ff, feather=0.2, opacity=0.2, shine=1, shading=0)
+    PolygonSprite(shape=Circle(5), color=#0033ee, crater=0.99, opacity=0.5, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=1)
+    
     ship.ShieldOn = true
-    let spawnTick = Tick
-    with Tick(0.1s) {
-        let ellapsed = Tick - spawnTick
-        let consumed = (ellapsed / duration).Clamp(0, 1)
-        
-        if consumed >= 0.7 {
-            PolygonSprite(shape=Circle(5), color=#0000ff, flicker=1, opacity=0.1, shine=0, shading=0.5, layer=1)
-        } else {
-            PolygonSprite(shape=Circle(5), color=#0022ff, feather=0.2, opacity=0.1, shine=0.5, shading=0.2, layer=1)
-        }
-        
-        PolygonSprite(shape=Circle(5), color=#0033ee, crater=0.99, opacity=0.5, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=1)
-        
-        if consumed >= 1 {
-            ship.ShieldOn = false
-            Expire
-            break
+    
+    on BeforeCollide that {
+        if that.Category.Overlaps(Category:Asteroid | Category:Enemy | Category:Explosion | Category:Projectile) {
+            body.Strobe(shine=0.5, dissipate=0.5s)
+
+            Energy -= 2
+
+            if Energy <= 0 {
+                ship.ShieldOn = false
+                Expire
+                break
+            }
         }
     }
 }

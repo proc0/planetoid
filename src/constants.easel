@@ -18,10 +18,10 @@ pub const SHIP_BRAKE = 0.2
 pub const SHIP_MAX_SPEED = 30
 pub const SHIP_DECAY_TURN = 0.1
 pub const SHIP_FIRE_RATE = 0.3s
+pub const SHIELD_ENERGY = 10
+// pub const POWERUP_DROP_RATE = 0.3
 
-pub const POWERUP_DROP_RATE = 0.3
-
-pub const ENEMY_BOSS_HEALTH = 55
-pub const ENEMY_LEADER_HEALTH = 25
-pub const ENEMY_CRAFT_HEALTH = 6
-pub const ENEMY_DRONE_HEALTH = 2
+// pub const ENEMY_BOSS_HEALTH = 55
+// pub const ENEMY_LEADER_HEALTH = 25
+// pub const ENEMY_FIGHTER_HEALTH = 11
+// pub const ENEMY_DRONE_HEALTH = 2

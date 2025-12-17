@@ -85,13 +85,13 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(KeySpacebar), ButtonDown(Click) {
-        behavior<fire> {
+        behavior<laser> {
             loop {
                 const angle = 0.03rev
                 let initial = -(angle * (BlastCount - 1)) / 2
                 for index in Range(0, BlastCount) {
-                    Spawn projectile {
-                        Projectile(source=ship, offset=initial + index * angle)
+                    Spawn weapon {
+                        Laser(source=ship, offset=initial + index * angle)
                     }
                 }
 
@@ -110,7 +110,7 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonUp(Click) {
-        delete behavior<fire>
+        delete behavior<laser>
     }
 
     await ReadyPlayer
@@ -119,7 +119,7 @@ pub fn ship.Ship([owner]) {
     on BeforeCollide that {
         if ShieldOn { return }
 
-        if that.Category.Overlaps(Category:Asteroid | Category:EnemyShip | Category:Explosion) {
+        if that.Category.Overlaps(Category:Asteroid | Category:Enemy | Category:Explosion | Category:Projectile) {
             Health -= 3
             
             DisplayHealth

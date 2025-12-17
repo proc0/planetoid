@@ -1,0 +1,25 @@
+pub fn weapon.Laser(source, offset=0) {
+    use body=weapon
+    use radius=0.25
+    use layer=4
+    use speed=50
+    use color=#ffffff
+    use ownerColor=true
+    use luminous=1
+
+    Body(bullet=true, pos=source.Pos, velocity=speed * Direction(source.Heading + offset) * 2)
+    PolygonCollider(shape=Circle, category=Category:Weapon, parent=source)
+
+    on Paint {
+        Streak(dissipate=0.1s, bloom=2, bloomAlpha=1, glare=1, shadow=0.5)
+    }
+
+    once BeforeCollide that {
+        Strobe(shine=1, dissipate=0.5s)
+        repeat 5 { Spark(shine=0.5, splatter=1, dissipate=0.5s) }
+        
+        Expire
+    }
+
+    once Tick(1.5s) { Expire }
+}

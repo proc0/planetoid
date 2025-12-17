@@ -1,14 +1,23 @@
 pub fn ship.DisplayHealth([body, owner]) {
-    with Health {
+    with Health, Energy {
         CommandBarLeft(audience=Audience:All) {
-            VStack(padding=2) {
-                P { 
-                    PlayerNameDisplay
-                }
+            VStack(hPadding=10, vPadding=5) {
                 
-                HStack(align=Align:Left, width=SHIP_HEALTH) {
-                    Panel(align=Align:Left, padding=0, borderRounding=0, backgroundColor=#00ff00) {
-                        Blank(width=Health, height=0.3)
+                HStack(width=SHIP_HEALTH, zStack=true) {
+                    P (marginBottom=3) {
+                        PlayerNameDisplay
+                    }
+                    ZOverlay {
+                        if Energy {
+                            Panel(width=Energy, padding=0, borderRounding=0, backgroundColor=#ffffff) {
+                                Blank(width=Energy, height=0.25)
+                            }
+                        }
+                    }
+                    ZUnderlay {                
+                        Panel(width=Health, padding=0, borderRounding=0, backgroundColor=#00ff00) {
+                            Blank(width=Health, height=0.25)
+                        }
                     }
                 }
             }
