@@ -6,12 +6,14 @@ field asteroid.Damage
 pub fn asteroid.Asteroid(radius=4, pos=RandomSpawnTopPos(4), speed=30*Random, health=10, damage=4, dissipate=0.75s, color=#444444, generation=0, parent?) {
     use body = asteroid
     use layer=5
+    use turnRate=0.1rev*PickRandom([-Random, Random])
+    
     Health = health
     Damage = damage
     
     Body(pos=, velocity=@(speed * Random * PickRandom([0.2,-0.2]), speed))
     PolygonCollider(shape=Circle, category=Category:Asteroid)
-    ImageSprite(@assets/asteroid.png, shading=0.25, shadow=0)
+    ImageSprite(@assets/asteroid_large.svg, shading=0.25, shadow=0)
     
     RecoverSpeed
     DespawnBounds

@@ -32,6 +32,7 @@ pub fn ship.Enemy(
     use body = ship
     use radius = 1
     use speed = 8
+    use layer = 5
     
     Health = health
     const maxHealth = health
@@ -40,9 +41,9 @@ pub fn ship.Enemy(
     PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
 
     if type == Drone {
-        ImageSprite(@assets/ship.svg, color=#ee1111, shading=0.3, shadow=0, scale=4)
+        ImageSprite(@assets/drone.svg, color=#ee1111, shading=0.3, shadow=0, scale=4)
     } else if type == Fighter {
-        ImageSprite(@assets/ship.svg, color=#ee11ff, shading=0.3, shadow=0, scale=4)
+        ImageSprite(@assets/drone.svg, color=#ee11ff, shading=0.3, shadow=0, scale=4)
     } else if type == Leader {
         ImageSprite(@assets/ship.svg, color=#eeee11, shading=0.3, shadow=0, scale=4)   
     } else {
@@ -78,9 +79,9 @@ pub fn ship.Enemy(
 
             if Health <= maxHealth/3 {
                 if type == Drone {
-                    ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
+                    ImageSprite(@assets/drone.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
                 } else if type == Fighter {
-                    ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
+                    ImageSprite(@assets/drone.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
                 } else if type == Leader {
                     ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)   
                 } else {
