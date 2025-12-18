@@ -1,7 +1,8 @@
 pub tangible category Category:Ship
 
-pub collect ship.BlastCount = 1
+pub prop ship.LaserCount = 1
 pub prop ship.Health
+pub prop ship.FireRate = SHIP_INIT_FIRERATE
 
 signal ship.ReadyPlayer
 field ship.TurboOn = false
@@ -85,27 +86,9 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(KeySpacebar), ButtonDown(Click) {
-        behavior<laser> {
-            loop {
-                const angle = 0.03rev
-                let initial = -(angle * (BlastCount - 1)) / 2
-                for index in Range(0, BlastCount) {
-                    Spawn weapon {
-                        Laser(source=ship, offset=initial + index * angle)
-                    }
-                }
-
-                if(BlastCount > 1) {
-                    Hear(@assets/basic_laser3.mp3)
-                } else {
-                    surprise {
-                        Hear(@assets/basic_laser.mp3),
-                        Hear(@assets/basic_laser2.mp3),
-                    }
-                }
-                // TODO: make this a powerup
-                await Tick(SHIP_FIRE_RATE)
-            }
+        Fire
+        behavior<laser> on Tick(FireRate) {
+            Fire
         }
     }
 
@@ -162,6 +145,25 @@ pub fn ship.Ship([owner]) {
             once Tick(0.25s) {
                 delete behavior<hit>
             }
+        }
+    }
+}
+
+fn ship.Fire {
+    const angle = 0.03rev
+    let initial = -(angle * (LaserCount - 1)) / 2
+    for index in Range(0, LaserCount) {
+        Spawn weapon {
+            Laser(source=ship, offset=initial + index * angle)
+        }
+    }
+
+    if(LaserCount > 3) {
+        Hear(@assets/basic_laser3.mp3)
+    } else {
+        surprise {
+            Hear(@assets/basic_laser.mp3),
+            Hear(@assets/basic_laser2.mp3),
         }
     }
 }

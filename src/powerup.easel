@@ -1,8 +1,9 @@
 pub tangible category Category:Powerup
 
+pub symbol HealthPickup
 pub symbol EnergyShield
 pub symbol MultiLaser
-pub symbol HealthPickup
+pub symbol AddFireRate
 
 signal powerup.NearShip
 
@@ -24,6 +25,8 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
         ImageSprite(@triblast.svg, radius=1, shading=0.5, shadow=0.5)
     } else if type == HealthPickup {
         ImageSprite(@cross.svg, radius=1, shading=0.5, shadow=0.5)
+    } else if type == AddFireRate {
+        ImageSprite(@firerate.svg, radius=1, shading=0.5, shadow=0.5)
     }
     
     RecoverSpeed
@@ -55,13 +58,18 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
                 }
             } else if type == MultiLaser {
                 ship.Subspawn {
-                    once Tick(10s) { Expire }
-                    give BlastCount(3)
+                    if ship.LaserCount < SHIP_MAX_LASERS {
+                        ship.LaserCount = ship.LaserCount + 1
+                    }
                 }
             } else if type == HealthPickup {
                 ship.Health += POWERUP_HEALTH_PICKUP
                 if ship.Health > SHIP_HEALTH {
                     ship.Health = SHIP_HEALTH
+                }
+            } else if type == AddFireRate {
+                if ship.FireRate >= SHIP_MAX_FIRERATE && ship.FireRate - POWERUP_FIRERATE > 0 {
+                    ship.FireRate -= POWERUP_FIRERATE
                 }
             }
             

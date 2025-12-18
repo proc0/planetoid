@@ -17,10 +17,14 @@ pub fn this.Level([owner]) {
 pub fn this.Level0 {
     once Tick {
         Spawn powerup {
-            Powerup(pos=@(-10, -5), type=EnergyShield)
+            Powerup(pos=@(-10, -5), type=MultiLaser)
         }
+        
         Spawn powerup {
             Powerup(pos=@(10, -5), type=MultiLaser)
+        }
+        Spawn powerup {
+            Powerup(pos=@(10, -5), type=AddFireRate)
         }
         Spawn powerup {
             Powerup(pos=@(-10, 5), type=HealthPickup)
