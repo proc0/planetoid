@@ -1,3 +1,17 @@
+pub tangible category Category:Bounds
+
+pub fn bounds.Bounds(posY=TOP+2) {
+    use body = bounds
+    use pos = @(0, posY)
+    use layer = 5
+    use color = #ff0000
+    use shape = Rectangle(width=BOUNDS_WIDTH*2, height=3)
+    
+    Body(pos=, immovable=true)
+
+    PolygonCollider(category=Category:Bounds, collideWith=Category:Ship)
+}
+
 pub fn this.TeleportBoundsX([body, radius]) {
     on BeforePhysics {
         if body.Pos.X.Abs > radius + BOUNDS_RADIUS && body.Velocity.X.Sign == body.Pos.X.Sign {
@@ -20,20 +34,6 @@ pub fn this.DespawnBoundsY([body, radius]) {
     on BeforePhysics {
         if body.Pos.Y + radius > BOUNDS_RADIUS {
             body.Expire
-        }
-    }
-}
-
-pub fn this.CollideBounds([body, radius]) {
-    on BeforePhysics {
-        // bounce back 
-        if body.Pos.Y.Abs > BOUNDS_RADIUS {
-            // 6 is scale of the image sprite(3) * 2 (collision is 1)
-            let offset = body.Pos.Y.Sign == 1 ? -6 : 6
-            body.Pos = @(body.Pos.X, body.Pos.Y + offset)
-        } else if body.Pos.Y.Abs + 3 > BOUNDS_RADIUS {
-            // slow down verticle movement
-            body.ApplyImpulse(@(0, body.Velocity.Y*-3))
         }
     }
 }

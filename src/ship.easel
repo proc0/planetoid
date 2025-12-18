@@ -29,7 +29,6 @@ pub fn ship.Ship([owner]) {
     LimitSpeed(maxSpeed=SHIP_MAX_SPEED)
     DecayTurnRate(SHIP_DECAY_TURN)
     TeleportBoundsX
-    CollideBounds
 
     DisplayHealth
     

@@ -8,6 +8,7 @@ pub const NEG_HALF_PI = -Pi/2
 pub const BOUNDS_RADIUS = 40
 pub const BOUNDS_WIDTH = BOUNDS_RADIUS*2
 pub const TOP = -BOUNDS_RADIUS
+pub const BOTTOM = BOUNDS_RADIUS
 
 pub fn RandomRange(floor, ceiling) -> Number {
     return ceiling*Random + floor

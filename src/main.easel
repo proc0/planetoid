@@ -8,6 +8,13 @@ pub game fn World.Main(maxHumanPlayers=3) {
     Spawn starfield {
         Starfield
     }
+
+    Spawn bounds {
+        Bounds(posY=TOP+2)
+        Subspawn bounds {
+            Bounds(posY=BOTTOM-2)
+        }
+    }
     
     SpawnEachPlayer owner {
         Subspawn ship {
