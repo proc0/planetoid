@@ -39,7 +39,7 @@ pub fn ship.Ship([owner]) {
     }
 
     once Tick(3s) { 
-        ReadyPlayer 
+        ReadyPlayer        
     }
 
     with Pointer {
@@ -128,11 +128,6 @@ pub fn ship.Ship([owner]) {
             if Health <= 0 {
                 Hear(@assets/explosion1.mp3)
     
-                // TODO: abstract explosions
-                repeat 5 {
-                    Spark(speed=10, dissipate=0.75s, feather=1, splatter=1, color=#ffffff, bloom=3, luminous=1)
-                }
-                
                 Transmission(audience=Audience:All) {
                     P { 
                         PlayerNameDisplay
@@ -156,6 +151,10 @@ pub fn ship.Ship([owner]) {
                 delete behavior<hit>
             }
         }
+    }
+
+    once BeforeDespawn {
+        Explode(body, radius)
     }
 }
 

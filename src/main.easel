@@ -51,7 +51,7 @@ pub game fn World.Main(maxHumanPlayers=3) {
                     Standout(fontSize=2) { FlyInWords(scoreTime) }
 
                     VStack(animate=Animate:FlyFromBottom, align=Align:Center, vPadding=2) {
-                        RaisedButton(Main, fontSize=2, hPadding=2.5, vPadding=1.5, backgroundColor=Color:Primary) { 
+                        RaisedButton(Main, fontSize=2, hPadding=2.5, vPadding=1, backgroundColor=Color:Primary) { 
                             "Retry" 
                         }
                     }

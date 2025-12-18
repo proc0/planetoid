@@ -105,8 +105,6 @@ pub fn ship.Enemy(
     }
 
     once BeforeDespawn {
-        repeat 5 {
-            Spark(color=#ffffff, luminous=1, bloom=3, feather=1, dissipate=0.75, splatter=1, speed=10)
-        }
+        Explode(body, radius)
     }
 }
