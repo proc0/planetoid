@@ -68,7 +68,7 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
                     ship.Health = SHIP_HEALTH
                 }
             } else if type == AddFireRate {
-                if ship.FireRate >= SHIP_MAX_FIRERATE && ship.FireRate - POWERUP_FIRERATE > 0 {
+                if ship.FireRate >= SHIP_MAX_FIRERATE && ship.FireRate - POWERUP_FIRERATE > SHIP_MAX_FIRERATE {
                     ship.FireRate -= POWERUP_FIRERATE
                 }
             }

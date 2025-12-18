@@ -86,9 +86,10 @@ pub fn ship.Enemy(
                 if Random > 1-dropRate {
                     Spawn powerup {
                         surprise {                
-                            Powerup(pos=Pos, type=EnergyShield),
-                            Powerup(pos=Pos, type=MultiLaser),
-                            Powerup(pos=Pos, type=HealthPickup),
+                            0.2 => Powerup(pos=Pos, type=EnergyShield),
+                            0.2 => Powerup(pos=Pos, type=MultiLaser),
+                            0.5 => Powerup(pos=Pos, type=HealthPickup),
+                            0.2 => Powerup(pos=Pos, type=AddFireRate),
                         }
                     }
                 }

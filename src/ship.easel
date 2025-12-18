@@ -6,6 +6,7 @@ pub prop ship.FireRate = SHIP_INIT_FIRERATE
 
 signal ship.ReadyPlayer
 field ship.TurboOn = false
+field ship.LaserCooldown = 0
 
 symbol Forward
 symbol Rightward
@@ -86,13 +87,22 @@ pub fn ship.Ship([owner]) {
     }
 
     on ButtonDown(KeySpacebar), ButtonDown(Click) {
-        Fire
+        if LaserCooldown <= 0 {
+            Fire
+            LaserCooldown = FireRate
+            behavior<cooldown> on Tick(0.1s) {
+                if LaserCooldown <= 0 {
+                    break
+                }
+                LaserCooldown -= 0.1s
+            }
+        }
         behavior<laser> on Tick(FireRate) {
             Fire
         }
     }
 
-    on ButtonUp(Click) {
+    on ButtonUp(KeySpacebar), ButtonUp(Click) {
         delete behavior<laser>
     }
 

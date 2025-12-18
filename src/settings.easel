@@ -1,4 +1,4 @@
-pub const LEVEL_START = 0
+pub const LEVEL_START = 1
 
 pub const SHIP_HEALTH = 15
 pub const SHIP_PROPEL = 3
