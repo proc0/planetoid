@@ -117,6 +117,11 @@ pub fn ship.Ship([owner]) {
     delete ImageSprite<invulnerable>
     
     on BeforeCollide that {
+        if that.Category.Overlaps(Category:Powerup) {
+            owner.Score += POWERUP_SCORE
+            return
+        }
+        
         if Energy > 0 {
             return 
         }

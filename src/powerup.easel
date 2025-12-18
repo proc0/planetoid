@@ -2,6 +2,7 @@ pub tangible category Category:Powerup
 
 pub symbol EnergyShield
 pub symbol MultiLaser
+pub symbol HealthPickup
 
 signal powerup.NearShip
 
@@ -16,12 +17,13 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     Body(pos=, velocity=@(Random, speed*Random))
     PolygonCollider(shape=Circle, category=Category:Powerup, collideWith=Category:None, sense=Category:Ship, density=1)
 
-    if type == EnergyShield {    
-        PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, opacity=0.5)
-        ImageSprite(@shield.svg, radius=0.85*radius, shadow=0.5)
+    PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, opacity=0.5)
+    if type == EnergyShield {
+        ImageSprite(@shield.svg, radius=1, shading=0.5, shadow=0.5)
     } else if type == MultiLaser {
-        PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, shading=0.5, opacity=0.5)
-        ImageSprite(@triblast.svg, radius=0.85*radius, shading=0.5, shadow=0.5)
+        ImageSprite(@triblast.svg, radius=1, shading=0.5, shadow=0.5)
+    } else if type == HealthPickup {
+        ImageSprite(@cross.svg, radius=1, shading=0.5, shadow=0.5)
     }
     
     RecoverSpeed
@@ -56,8 +58,13 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
                     once Tick(10s) { Expire }
                     give BlastCount(3)
                 }
+            } else if type == HealthPickup {
+                ship.Health += POWERUP_HEALTH_PICKUP
+                if ship.Health > SHIP_HEALTH {
+                    ship.Health = SHIP_HEALTH
+                }
             }
-
+            
             Expire
             break
         }

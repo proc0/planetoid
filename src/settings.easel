@@ -1,4 +1,4 @@
-pub const LEVEL_START = 1
+pub const LEVEL_START = 0
 
 pub const SHIP_HEALTH = 15
 pub const SHIP_PROPEL = 3
@@ -12,6 +12,8 @@ pub const POWERUP_INIT_SHIELD_ENERGY = 7
 pub const POWERUP_SHIELD_ENERGY = 3
 pub const POWERUP_MAGNET_RADIUS = 12
 pub const POWERUP_LIFETIME = 7s
+pub const POWERUP_HEALTH_PICKUP = 3
+pub const POWERUP_SCORE = 150
 
 pub const Settings = {
     "Category:Weapon"={
