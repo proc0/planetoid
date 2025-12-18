@@ -5,22 +5,6 @@ pub symbol Fighter
 pub symbol Leader
 pub symbol None
 
-pub fn EnemyDrone(ship, [owner]) {
-    Enemy(type=Drone, health=2)
-}
-
-pub fn EnemyFighter(ship, [owner]) {
-    Enemy(
-        type=Fighter, 
-        health=11,
-        fireRate=2s,
-        killScore=250,
-    )
-}
-
-pub fn EnemyLeader(ship, [owner]) {
-    Enemy(type=Leader, health=25)
-}
 
 pub fn ship.Enemy(
     type=None, 
@@ -36,6 +20,7 @@ pub fn ship.Enemy(
     
     Health = health
     const maxHealth = health
+    const lowHealth = maxHealth/3
     
     Body(pos=RandomSpawnTopPos, velocity=@(0, speed))
     PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
@@ -77,15 +62,17 @@ pub fn ship.Enemy(
             
             Health -= Settings[that.Category.ToString].damage
 
-            if Health <= maxHealth/3 {
-                if type == Drone {
-                    ImageSprite(@assets/drone.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
-                } else if type == Fighter {
-                    ImageSprite(@assets/drone.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)
-                } else if type == Leader {
-                    ImageSprite(@assets/ship.svg, color=#ff0000, shading=0.3, shadow=0, scale=4)   
-                } else {
-                    PolygonSprite(shape=Circle, color=#ff0000)        
+            if Health <= lowHealth {
+                behavior<malfunction> on Tick(0.5s) {
+                    repeat 7 { 
+                        Spark(radius=Random*2, bodyOffset=RandomVector*radius, color=#222222, shine=0, splatter=1, fade=0.5, dissipate=1s, radius=Random, velocity=-Velocity) 
+                    }
+                    
+                    repeat 4 {
+                        Spark(radius=0.5, layer=6, dissipate=0.1s, color=#ffcc00, luminous=1, bloom=3, speed=30, velocity=RandomVector*40, splatter=1)
+                    }
+
+                    Velocity = Velocity + RandomVector*PickRandom([-2,2])
                 }
             }
             

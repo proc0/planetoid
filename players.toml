@@ -1,5 +1,5 @@
 [players]
-selfColor = "#ffffff00"
+selfColor = "#ffffffff"
 allyColor = "#33bbdd"
 colors = ["#ff0000", "#b69cf6", "#54c794", "#e09f47", "#e08747", "#e58cc5", "#a9b852", "#6eb2fd"]
 teamHueJitter = 5

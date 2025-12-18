@@ -1,16 +1,5 @@
 pub const LEVEL_START = 1
 
-pub const UP = @(0, -1)
-pub const RIGHT = @(1, 0)
-pub const DOWN = @(0, 1)
-pub const LEFT = @(-1, 0)
-pub const HALF_PI = Pi/2
-pub const NEG_HALF_PI = -Pi/2
-
-pub const BOUNDS_RADIUS = 40
-pub const BOUNDS_WIDTH = BOUNDS_RADIUS*2
-pub const TOP = -BOUNDS_RADIUS
-
 pub const SHIP_HEALTH = 15
 pub const SHIP_PROPEL = 3
 pub const SHIP_TURBO = 9
@@ -21,6 +10,8 @@ pub const SHIP_FIRE_RATE = 0.3s
 
 pub const POWERUP_INIT_SHIELD_ENERGY = 7
 pub const POWERUP_SHIELD_ENERGY = 3
+pub const POWERUP_MAGNET_RADIUS = 12
+pub const POWERUP_LIFETIME = 7s
 
 pub const Settings = {
     "Category:Weapon"={
@@ -38,4 +29,21 @@ pub const Settings = {
     "Category:Explosion"={
         damage = 4
     }
+}
+
+pub fn EnemyDrone(ship, [owner]) {
+    Enemy(type=Drone, health=2)
+}
+
+pub fn EnemyFighter(ship, [owner]) {
+    Enemy(
+        type=Fighter, 
+        health=11,
+        fireRate=2s,
+        killScore=250,
+    )
+}
+
+pub fn EnemyLeader(ship, [owner]) {
+    Enemy(type=Leader, health=25)
 }
