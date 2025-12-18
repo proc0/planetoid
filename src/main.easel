@@ -1,4 +1,5 @@
 pub prop owner.Score = 0
+pub prop owner.Time = 0
 
 pub game fn World.Main(maxHumanPlayers=3) {
     SolidBackground(color=#000000)
@@ -25,11 +26,15 @@ pub game fn World.Main(maxHumanPlayers=3) {
             }
         }
 
-        
         TopContent {
-            with Score {
-                HStack(width=BOUNDS_WIDTH, align=Align:Right, hPadding=8) {
-                    H1 { %(Score) }
+            with Score, Time {
+                HStack(width=BOUNDS_WIDTH, hPadding=5) {
+                    HStack(width=BOUNDS_WIDTH/2, align=Align:Left) {
+                        H1 { %(Time) }
+                    }
+                    HStack(width=BOUNDS_WIDTH/2, align=Align:Right) {
+                        H1 { %(Score) }
+                    }
                 }
             }
         }
@@ -38,17 +43,28 @@ pub game fn World.Main(maxHumanPlayers=3) {
         BeginLevel(LEVEL_START)
         
         once AfterEliminated {
+            const scoreTime = "Time " + Time + " | Score " + Score
+            
             OverlayContent {
                 VStack(align=Align:Center) {
                     Standout(fontSize=5) { FlyInWords("Destroyed") }
+                    Standout(fontSize=2) { FlyInWords(scoreTime) }
 
-                    HStack(animate=Animate:FlyFromBottom, align=Align:Center) {
-                        RaisedButton(Main, backgroundColor=Color:Primary) { "Retry" }
+                    VStack(animate=Animate:FlyFromBottom, align=Align:Center, vPadding=2) {
+                        RaisedButton(Main, fontSize=2, hPadding=2.5, vPadding=1.5, backgroundColor=Color:Primary) { 
+                            "Retry" 
+                        }
                     }
                 }
             }
         }
+
+
+        on Tick(TicksPerSecond) {
+            Time += 1
+        }
     }
+
     
     ButtonRemap(Tap, Click)
 }
