@@ -1,14 +1,10 @@
 pub page fn owner.HomePage {
-    
     ContentScreen {
         HStack(align=Align:Center, backgroundColor=#000000, expand=true) {
             VStack {
-                        
                 Standout { %(ProjectName) }
-        
                 RaisedButton(Main, backgroundColor=Color:Accent, width=25, fontSize=1.5) { "Play" }
             }
         }
     }
 }
-
