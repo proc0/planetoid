@@ -154,7 +154,7 @@ pub fn ship.Ship([owner]) {
     }
 
     once BeforeDespawn {
-        Explode(body, radius)
+        Explode
     }
 }
 
