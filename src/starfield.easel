@@ -3,7 +3,7 @@ pub fn starfield.Starfield {
     use radius=1
     use layer=-5
     
-    const count = Random*30 + 20
+    const count = RandomRange(20, 30)
     
     Body(pos=@(0,0))
 
@@ -12,6 +12,6 @@ pub fn starfield.Starfield {
     }
     
     with Tick(3s) {
-        Spawn star { Star(pos=RandomSpawnTopPos(2)) }
+        Spawn star { Star(pos=RandomSpawnTopPos(radius=2)) }
     }
 }

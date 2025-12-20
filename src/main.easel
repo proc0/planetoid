@@ -10,6 +10,10 @@ pub game fn World.Main(maxHumanPlayers=3) {
         Starfield
     }
 
+    Spawn beltoid {
+        Beltoid
+    }
+    
     Spawn bounds {
         Bounds(posY=TOP+2)
         Subspawn bounds {

@@ -2,15 +2,17 @@ pub tangible category Category:Asteroid
 
 prop asteroid.Health
 
-pub fn asteroid.Asteroid(radius=RandomRange(2.5,5), pos=RandomSpawnTopPos(4), speed=10*Random, health=50*RandomRange(2.5,5), dissipate=0.75s, color=#dddddd, generation=0, parent?) {
+pub fn asteroid.Asteroid(radius=RandomRange(2.5,5), pos=RandomSpawnTopPos(4), speed=10*Random, velocity=@(speed * Random * PickRandom([0.2,-0.2]), speed), health=50*RandomRange(2.5,5), collides=true, dissipate=0.75s, color=#dddddd, generation=0, parent?) {
     use body = asteroid
-    use layer=5
+    use layer= collides ? 5 : -3
     use turnRate=0.01rev*PickRandom([-Random, Random])
     
     Health = health
     
-    Body(pos=, velocity=@(speed * Random * PickRandom([0.2,-0.2]), speed))
-    PolygonCollider(shape=Circle, category=Category:Asteroid)
+    Body(pos=, velocity=)
+    if collides {
+        PolygonCollider(shape=Circle, category=Category:Asteroid)
+    }
 
     const asteroidSprite = PickRandom([
         @assets/asteroid1.svg,
