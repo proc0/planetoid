@@ -11,13 +11,23 @@ pub fn asteroid.Asteroid(radius=RandomRange(2.5,5), pos=RandomSpawnTopPos(4), sp
     
     Body(pos=, velocity=@(speed * Random * PickRandom([0.2,-0.2]), speed))
     PolygonCollider(shape=Circle, category=Category:Asteroid)
-    ImageSprite(@assets/asteroid_large.svg, shading=0.25, shadow=0)
+
+    const asteroidSprite = PickRandom([
+        @assets/asteroid1.svg,
+        @assets/asteroid2.svg,
+        @assets/asteroid3.svg,
+        @assets/asteroid4.svg,
+        @assets/asteroid5.svg,
+        @assets/asteroid6.svg,
+        @assets/asteroid7.svg,
+    ])
+    ImageSprite(asteroidSprite, shading=0.25, shadow=0)
     
     RecoverSpeed
     DespawnBounds
 
     on BeforeCollide that {
-        repeat 5 { Spark(color=#222222, shine=0, splatter=1, dissipate=0.5s, radius=Random, velocity=Velocity*RandomVector) }
+        repeat 5 { Spark(radius=radius*3, bodyOffset=Direction(that.Velocity)*-radius, feather=1, taper=0.3, layer=7, color=#333333, shine=0, splatter=1, dissipate=0.8s, radius=Random, velocity=Velocity*Direction(that.Velocity)*-1) }
 
         Health -= Settings[that.Category.ToString].damage
         
@@ -29,7 +39,7 @@ pub fn asteroid.Asteroid(radius=RandomRange(2.5,5), pos=RandomSpawnTopPos(4), sp
                 let nextGen = generation + 1
                 repeat 2 {
                     Spawn asteroid {
-                        Asteroid(radius=0.6*radius, pos=Pos+RandomVector, speed=1.3*speed, health=8/nextGen, 
+                        Asteroid(radius=0.6*radius, pos=Pos+RandomVector*3, speed=1.3*speed, health=8/nextGen, 
                                  dissipate=0.7*dissipate, color=Mix(0.25, color, #ffff00), generation=nextGen, parent=)
                     }
                 }
