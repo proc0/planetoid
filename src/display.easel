@@ -8,13 +8,13 @@ pub fn ship.DisplayHealth([body, owner]) {
                         PlayerNameDisplay
                     }
                     ZOverlay {
-                        Panel(width=Energy > 0 ? Energy : 0, padding=0, borderRounding=0, backgroundColor=#ffffff) {
-                            Blank(width=Energy > 0 ? Energy : 0, height=0.25)
+                        Panel(width=Energy > 0 ? Energy*0.2 : 0, padding=0, borderRounding=0, backgroundColor=#ffffff) {
+                            Blank(width=Energy > 0 ? Energy*0.2 : 0, height=0.25)
                         }
                     }
                     ZUnderlay {                
-                        Panel(width=Health, padding=0, borderRounding=0, backgroundColor=#00ff00) {
-                            Blank(width=Health, height=0.25)
+                        Panel(width=Health*0.2, padding=0, borderRounding=0, backgroundColor=#00ff00) {
+                            Blank(width=Health*0.2, height=0.25)
                         }
                     }
                 }

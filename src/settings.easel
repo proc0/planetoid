@@ -1,6 +1,6 @@
 pub const LEVEL_START = 1
 
-pub const SHIP_HEALTH = 15
+pub const SHIP_HEALTH = 100
 pub const SHIP_PROPEL = 3
 pub const SHIP_TURBO = 9
 pub const SHIP_BRAKE = 0.2
@@ -10,8 +10,8 @@ pub const SHIP_INIT_FIRERATE = 0.35s
 pub const SHIP_MAX_FIRERATE = 0.1s
 pub const SHIP_MAX_LASERS = 7
 
-pub const POWERUP_INIT_SHIELD_ENERGY = 7
-pub const POWERUP_SHIELD_ENERGY = 3
+pub const POWERUP_INIT_SHIELD_ENERGY = 27
+pub const POWERUP_SHIELD_ENERGY = 8
 pub const POWERUP_MAGNET_RADIUS = 12
 pub const POWERUP_LIFETIME = 7s
 pub const POWERUP_HEALTH_PICKUP = 3
@@ -20,35 +20,35 @@ pub const POWERUP_SCORE = 150
 
 pub const Settings = {
     "Category:Weapon"={
-        damage = 2
+        damage = 15
     },
     "Category:Projectile"={
-        damage = 2
+        damage = 20
     },
     "Category:Asteroid"={
-        damage = 3
+        damage = 12
     },
     "Category:Enemy"={
-        damage = 1
+        damage = 10
     },
     "Category:Explosion"={
-        damage = 4
+        damage = 40
     }
 }
 
 pub fn EnemyDrone(ship, [owner]) {
-    Enemy(type=Drone, health=2)
+    Enemy(type=Drone, health=20)
 }
 
 pub fn EnemyFighter(ship, [owner]) {
     Enemy(
         type=Fighter, 
-        health=11,
+        health=80,
         fireRate=2s,
         killScore=250,
     )
 }
 
 pub fn EnemyLeader(ship, [owner]) {
-    Enemy(type=Leader, health=25)
+    Enemy(type=Leader, health=125)
 }
