@@ -12,8 +12,6 @@ symbol StateApproach
 symbol StateHold
 symbol StateAvoid
 
-prop ship.State
-
 fn this.ChangeState(currentState, nextState) -> symbol {
     let resultState = nextState
     if nextState == StateHold {
@@ -71,27 +69,41 @@ pub fn ship.Enemy(
 
     if strategy == StrategyCautious {
         
-        behavior on Tick(10) {
+        behavior on Tick(1) {
             let hero = QueryNearest(filter=Category:Ship)
-            let distanceFromHero = Distance(body.Pos, hero.Pos)
-            
-            if state == StateApproach {            
-                let shipDirection = Direction(body.Velocity - hero.Velocity)
-                body.Velocity = shipDirection * speed
-            } else if state == StateAvoid {
-                let shipDirection = Direction(body.Velocity - hero.Velocity)
-                body.Velocity = shipDirection * speed * -1
+            if !hero { 
+                Heading = HALF_PI
+                Velocity = @(0, speed)
+                break 
             }
             
-            if distanceFromHero > 10 {
+            let distanceFromHero = Distance(body.Pos, hero.Pos)
+            if state == StateApproach {            
+                let shipDirection = Direction(body.Velocity - hero.Velocity)
+                body.Velocity = shipDirection * speed * 2
+                await Tick(1s + Random*1s)
+                Heading = hero.Pos - body.Pos
+            } else if state == StateAvoid {
+                // let shipDirection = Direction(body.Velocity - hero.Velocity)
+                body.Velocity *= -1
+            } else {
+                Heading = hero.Pos - body.Pos
+            }
+            
+        }
+
+        behavior on Tick(30) {
+            let hero = QueryNearest(filter=Category:Ship)
+            if !hero { break }
+            
+            let distanceFromHero = Distance(body.Pos, hero.Pos).Abs
+            if distanceFromHero > 8 {
                 state = ChangeState(state, StateApproach)
-            } else if distanceFromHero < 10 {
+            } else if distanceFromHero < 5 {
                 state = ChangeState(state, StateAvoid)
             } else {
                 state = ChangeState(state, StateHold)
             }
-            
-            Heading = hero.Pos - body.Pos
         }
     }
 

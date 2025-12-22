@@ -9,7 +9,7 @@ pub fn projectile.Bomb(ship, target) {
     Body(bullet=true, pos=ship.Pos, velocity=speed*Direction(target-pos))
 
     PolygonSprite(shape=Circle, glare=0.7, bloom=3)
-    PolygonSprite(shape=Circle(6), crater=0.85, color=color.Fade(0.95))
+    // PolygonSprite(shape=Circle(6), crater=0.85, color=color.Fade(0.95))
     PolygonCollider(shape=Circle, category=Category:Projectile, 
                     collideWith=Category:Ship | Category:Projectile | Category:Asteroid | Category:Weapon)
 
