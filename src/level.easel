@@ -41,13 +41,13 @@ pub fn this.Level1([owner]) {
             }
         }
     }
-
+    
     once Tick(3s) {
         delete OverlayContent<levelTitle>
     }
-
+    
     with Tick(1s) {
-        const MaxAsteroids = 15
+        const MaxAsteroids = 5
         if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
             Spawn asteroid {
                 Asteroid
@@ -55,24 +55,11 @@ pub fn this.Level1([owner]) {
         }
     }
 
-    // with Tick(5s) {
-    //     const MaxPowerups = 1
-    //     if QueryCount(filter=Category:Powerup) < MaxPowerups {
-    //         Spawn powerup {
-    //             surprise {                
-    //                 ShieldPowerup,
-    //                 TriblastPowerup,
-    //             }
-    //         }
-    //     }
-    // }
-
-    with Tick(5s) {
-        const MaxEnemies=3
+    with Tick(3s) {
+        const MaxEnemies=5
         if QueryCount(filter=Category:Enemy) < MaxEnemies {
             Spawn ship {
                 surprise {
-                    Enemy,
                     EnemyFighter(ship)
                 }
 

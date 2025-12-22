@@ -5,13 +5,17 @@ pub symbol Fighter
 pub symbol Leader
 pub symbol None
 
+pub symbol StrategyCautious
+pub symbol StrategyAggressive
 
 pub fn ship.Enemy(
     type=None, 
+    pos=RandomSpawnTopPos,
     health=1,
     fireRate=2s,
     killScore=50,
     dropRate=0.3,
+    strategy=StrategyCautious,
     [owner]) {
     use body = ship
     use radius = 1
@@ -22,15 +26,15 @@ pub fn ship.Enemy(
     const maxHealth = health
     const lowHealth = maxHealth/3
     
-    Body(pos=RandomSpawnTopPos, velocity=@(0, speed))
+    Body(pos=, velocity=@(0, speed))
     PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
 
     if type == Drone {
-        ImageSprite(@assets/drone.svg, color=#ee1111, shading=0.3, shadow=0, scale=4)
+        ImageSprite(@assets/enemy_fighter.png, color=#ee1111, shading=0.3, shadow=0, scale=4.5)
     } else if type == Fighter {
-        ImageSprite(@assets/drone.svg, color=#ee11ff, shading=0.3, shadow=0, scale=4)
+        ImageSprite(@assets/enemy_fighter.png, shading=0.3, shadow=0, scale=4.5)
     } else if type == Leader {
-        ImageSprite(@assets/ship.svg, color=#eeee11, shading=0.3, shadow=0, scale=4)   
+        ImageSprite(@assets/enemy_fighter.png, color=#eeee11, shading=0.3, shadow=0, scale=4)   
     } else {
         PolygonSprite(shape=Circle, color=#ff0000)        
     }
@@ -40,11 +44,23 @@ pub fn ship.Enemy(
     DespawnBoundsY
 
     once Tick {
-       Heading = HALF_PI 
+       // Heading = HALF_PI 
+        let hero = QueryNearest(filter=Category:Ship)
+        if hero {
+            Heading = hero.Pos - body.Pos
+        }
     }
 
-    on Tick(4s) {
-        Velocity = @(0, Speed*Random)
+    if strategy == StrategyCautious {
+        
+        behavior on Tick(10) {
+            let hero = QueryNearest(filter=Category:Ship)
+            if hero && Distance(body.Pos, hero.Pos) < 30 {
+                let reverseVector = body.Velocity - hero.Velocity
+                body.Velocity += reverseVector * -1
+            }
+            Heading = hero.Pos - body.Pos
+        }
     }
 
     on Tick(fireRate) {
