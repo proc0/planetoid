@@ -8,6 +8,22 @@ pub symbol None
 pub symbol StrategyCautious
 pub symbol StrategyAggressive
 
+symbol StateApproach
+symbol StateHold
+symbol StateAvoid
+
+prop ship.State
+
+fn this.ChangeState(currentState, nextState) -> symbol {
+    let resultState = nextState
+    if nextState == StateHold {
+        resultState = nextState
+    } else if currentState == StateAvoid || currentState == StateApproach {
+        resultState = currentState
+    }
+    return resultState
+}
+
 pub fn ship.Enemy(
     type=None, 
     pos=RandomSpawnTopPos,
@@ -23,6 +39,8 @@ pub fn ship.Enemy(
     use layer = 5
     
     Health = health
+    let state = StateApproach
+    
     const maxHealth = health
     const lowHealth = maxHealth/3
     
@@ -55,10 +73,24 @@ pub fn ship.Enemy(
         
         behavior on Tick(10) {
             let hero = QueryNearest(filter=Category:Ship)
-            if hero && Distance(body.Pos, hero.Pos) < 30 {
-                let reverseVector = body.Velocity - hero.Velocity
-                body.Velocity += reverseVector * -1
+            let distanceFromHero = Distance(body.Pos, hero.Pos)
+            
+            if state == StateApproach {            
+                let shipDirection = Direction(body.Velocity - hero.Velocity)
+                body.Velocity = shipDirection * speed
+            } else if state == StateAvoid {
+                let shipDirection = Direction(body.Velocity - hero.Velocity)
+                body.Velocity = shipDirection * speed * -1
             }
+            
+            if distanceFromHero > 10 {
+                state = ChangeState(state, StateApproach)
+            } else if distanceFromHero < 10 {
+                state = ChangeState(state, StateAvoid)
+            } else {
+                state = ChangeState(state, StateHold)
+            }
+            
             Heading = hero.Pos - body.Pos
         }
     }
