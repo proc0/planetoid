@@ -47,7 +47,7 @@ pub fn this.Level1([owner]) {
     }
     
     with Tick(1s) {
-        const MaxAsteroids = 5
+        const MaxAsteroids = 3
         if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
             Spawn asteroid {
                 Asteroid
@@ -56,12 +56,13 @@ pub fn this.Level1([owner]) {
     }
 
     with Tick(3s) {
-        const MaxEnemies=5
+        const MaxEnemies=4
         if QueryCount(filter=Category:Enemy) < MaxEnemies {
             Spawn ship {
-                surprise {
+                // surprise {
+                // }
                     EnemyFighter(ship)
-                }
+                BehaveCatious(ship, ship.speed)
 
                 // once BeforeDespawn {
                 //     World.BeginLevel(2)

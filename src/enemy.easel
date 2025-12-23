@@ -11,6 +11,9 @@ pub symbol StrategyAggressive
 symbol StateApproach
 symbol StateHold
 symbol StateAvoid
+symbol StateRealign
+
+prop ship.State
 
 fn this.ChangeState(currentState, nextState) -> symbol {
     let resultState = nextState
@@ -20,6 +23,88 @@ fn this.ChangeState(currentState, nextState) -> symbol {
         resultState = currentState
     }
     return resultState
+}
+
+pub fn this.BehaveCatious(body, speed=3) {
+        let lastDetectedPos = @(0,0)
+        behavior on Tick(4) {
+            
+            let hero = QueryNearest(filter=Category:Ship)
+            if !hero { 
+                Heading = HALF_PI
+                Velocity = @(0, 4)
+                break 
+            }
+            Heading = lastDetectedPos - body.Pos
+            let nextDetectedPos = lastDetectedPos.Towards(hero.Pos, 1)
+            lastDetectedPos = nextDetectedPos == 1 ? hero.Pos : nextDetectedPos
+
+            if lastDetectedPos == hero.Pos {
+                await Tick(1.5s)
+            }
+            // let distanceFromHero = Distance(body.Pos, hero.Pos)
+            // if body.state == StateApproach {            
+            //         body.Velocity = lastDetectedPos * speed * 2
+            // ConsoleLog(body.Velocity)
+            //     // await Tick(1s + Random*1s)
+            //     // Heading = hero.Pos - body.Pos
+            // } else if body.state == StateAvoid {
+            //     // let shipDirection = Direction(body.Velocity - hero.Velocity)
+            //     body.Velocity *= -1
+            // } else if body.state == StateHold {
+            //     body.Velocity = @(0, 0)
+            //     Heading = hero.Pos - body.Pos
+            // }
+            
+        }
+
+        behavior on Tick(20) {
+            let hero = QueryNearest(filter=Category:Ship)
+            if !hero { break }
+            
+            let distanceFromHero = Distance(body.Pos, hero.Pos).Abs
+            if lastDetectedPos == @(0, 0) {
+                lastDetectedPos = Direction(hero.Pos - body.Pos)
+                Heading = hero.Pos - body.Pos
+            }
+            // let distanceAway = body.Pos.Towards(hero.Pos, 5)
+            // if distanceAway != hero.Pos && body.state != StateApproach {
+            if distanceFromHero > 40 && body.state != StateApproach {
+                body.state = ChangeState(body.state, StateApproach)
+                lastDetectedPos = Direction(hero.Pos - body.Pos)
+                body.ApplyImpulse(Direction(lastDetectedPos)*155)
+                // RecoverSpeed(speed=body.Velocity.Y)
+                
+            } else if distanceFromHero < 30 && body.state != StateAvoid {
+                body.state = ChangeState(body.state, StateAvoid)
+                // body.Velocity = lastDetectedPos * -2
+                body.ApplyImpulse(Direction(hero.Pos - body.Pos)*-155)
+            } else if distanceFromHero > 30 && distanceFromHero < 40 {
+                body.state = ChangeState(body.state, StateHold)
+                // let head = hero.Pos - body.Pos
+                // let angleCheck = Direction(head).Dot(Direction(body.Heading)).Abs
+                // ConsoleLog(angleCheck)
+                // if angleCheck < 0.4 {
+                //     ApplyTurningImpulse(24)
+                // } else {
+                //   ApplyTurningImpulse(-24)
+                // }
+                body.Velocity = @(0, 0)
+
+            } 
+            // else {
+            //     body.state = ChangeState(body.state, StateRealign)
+            //     let head = hero.Pos - body.Pos
+            //     // let angleCheck = Direction(head).Dot(Direction(body.Heading)).Abs
+            //     // if angleCheck > 0.4 {
+            //     //     ApplyTurningImpulse(24)
+            //     //     await Tick(2s)
+            //     // } else {
+            //     //     Heading = hero.Pos - body.Pos
+            //     //     body.state = ChangeState(body.state, StateHold)
+            //     // }
+            // }
+        }
 }
 
 pub fn ship.Enemy(
@@ -33,16 +118,16 @@ pub fn ship.Enemy(
     [owner]) {
     use body = ship
     use radius = 1
-    use speed = 8
+    // use speed = 8
     use layer = 5
+    let state = StateApproach
     
     Health = health
-    let state = StateApproach
     
     const maxHealth = health
     const lowHealth = maxHealth/3
     
-    Body(pos=, velocity=@(0, speed))
+    Body(pos=, velocity=@(0, 8))
     PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
 
     if type == Drone {
@@ -54,58 +139,21 @@ pub fn ship.Enemy(
     } else {
         PolygonSprite(shape=Circle, color=#ff0000)        
     }
-    
-    RecoverSpeed
+
     TeleportBoundsX
     DespawnBoundsY
 
     once Tick {
-       // Heading = HALF_PI 
-        let hero = QueryNearest(filter=Category:Ship)
-        if hero {
-            Heading = hero.Pos - body.Pos
-        }
+       Heading = HALF_PI 
+        // let hero = QueryNearest(filter=Category:Ship)
+        // if hero {
+        //     Heading = hero.Pos - body.Pos
+        // }
     }
 
-    if strategy == StrategyCautious {
-        
-        behavior on Tick(1) {
-            let hero = QueryNearest(filter=Category:Ship)
-            if !hero { 
-                Heading = HALF_PI
-                Velocity = @(0, speed)
-                break 
-            }
-            
-            let distanceFromHero = Distance(body.Pos, hero.Pos)
-            if state == StateApproach {            
-                let shipDirection = Direction(body.Velocity - hero.Velocity)
-                body.Velocity = shipDirection * speed * 2
-                await Tick(1s + Random*1s)
-                Heading = hero.Pos - body.Pos
-            } else if state == StateAvoid {
-                // let shipDirection = Direction(body.Velocity - hero.Velocity)
-                body.Velocity *= -1
-            } else {
-                Heading = hero.Pos - body.Pos
-            }
-            
-        }
+    // if strategy == StrategyCautious {
 
-        behavior on Tick(30) {
-            let hero = QueryNearest(filter=Category:Ship)
-            if !hero { break }
-            
-            let distanceFromHero = Distance(body.Pos, hero.Pos).Abs
-            if distanceFromHero > 8 {
-                state = ChangeState(state, StateApproach)
-            } else if distanceFromHero < 5 {
-                state = ChangeState(state, StateAvoid)
-            } else {
-                state = ChangeState(state, StateHold)
-            }
-        }
-    }
+    // }
 
     on Tick(fireRate) {
         let hero = QueryNearest(filter=Category:Ship)
