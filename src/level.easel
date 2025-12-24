@@ -17,14 +17,16 @@ pub fn this.Level([owner]) {
 pub fn this.Level0 {
     once Tick {
         Spawn powerup {
-            Powerup(pos=@(-10, -5), type=MultiLaser)
+            Powerup(pos=@(-10, -5), type=EnergyShield)
         }
-        
-        Spawn powerup {
-            Powerup(pos=@(10, -5), type=MultiLaser)
+        Spawn asteroid {
+            Asteroid
         }
         Spawn powerup {
-            Powerup(pos=@(10, -5), type=AddFireRate)
+            Powerup(pos=@(10, -5), type=UpgradeThruster)
+        }
+        Spawn powerup {
+            Powerup(pos=@(30, -5), type=AddFireRate)
         }
         Spawn powerup {
             Powerup(pos=@(-10, 5), type=HealthPickup)
@@ -33,6 +35,8 @@ pub fn this.Level0 {
 }
 
 pub fn this.Level1([owner]) {
+
+    // Music(@assets/bgm1.mp3, volume=0.5, loop=true)
     
     once Tick {
         OverlayContent<levelTitle> {

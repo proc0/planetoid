@@ -8,17 +8,20 @@ pub fn shield.Shield(ship, energy=POWERUP_INIT_SHIELD_ENERGY) {
     use owner=ship.Owner
     use radius=3
     use luminous=1
+    use layer = 6
     use duration=15s
 
     Energy = energy
     
     PolygonCollider(shape=Circle, category=Category:Shield, density=0)
-    PolygonSprite(layer=20, shape=Circle(5), color=#0022ff, feather=0.2, opacity=0.2, shine=1, shading=0)
-    PolygonSprite(shape=Circle(5), color=#0033ee, crater=0.99, opacity=0.5, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=1)
+    PolygonSprite(layer=6, shape=Equilateral(numPoints=6, radius=5), ownerColor=0.5, feather=0.3, opacity=0.2, shine=0.4, shading=0)
+    PolygonSprite(shape=Equilateral(numPoints=8, radius=5), color=#0033ee, crater=0.99, opacity=0.8, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=6)
+    PolygonSprite(shape=Equilateral(numPoints=4, radius=4), color=#0033ee, crater=0.99, opacity=0.8, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=6)
+    PolygonSprite(shape=Equilateral(numPoints=4, radius=4, angle=0.8), color=#0033ee, crater=0.99, opacity=0.8, shine=0.8, bloom=0.3, luminous=0.7, shading=0.2, layer=6)
     
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Asteroid | Category:Enemy | Category:Explosion | Category:Projectile) {
-            body.Strobe(shine=0.5, dissipate=0.5s)
+            Strobe(shine=1, dissipate=0.5s)
 
             Energy -= Settings[that.Category.ToString].damage
 

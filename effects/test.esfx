@@ -1,0 +1,19 @@
+Play(duration=1.5s, delay=0.5s, cutoff=0.5s) {
+    BrownNoise
+    BandPass(freq=[220,330], q=[1,5])
+    Envelope(attack=0.25s, release=0.5s)
+
+}
+
+// Play {
+//     Oscillator(freq=500)
+//     Envelope(attack=0.01s)
+//     Output(into=$abc)
+    
+//     Oscillator(freq=750)
+//     Envelope(attack=0.5s)
+//     Output(into=$abc)
+    
+//     Input(key=$abc)
+//     LowPass(freq=1000) // receives from the two Outputs above
+// }

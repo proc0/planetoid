@@ -3,6 +3,8 @@ pub tangible category Category:Ship
 pub prop ship.LaserCount = 1
 pub prop ship.Health
 pub prop ship.FireRate = SHIP_INIT_FIRERATE
+pub prop ship.PropelRate = SHIP_PROPEL
+pub prop ship.TurboRate = SHIP_TURBO
 
 signal ship.ReadyPlayer
 field ship.TurboOn = false
@@ -22,11 +24,11 @@ pub fn ship.Ship([owner]) {
     Body(pos=@(0, BOUNDS_RADIUS - 16))
     PolygonCollider(shape=Circle, category=Category:Ship, density=2)
     
-    ImageSprite<invulnerable>(@assets/ship.png, scale=4, overlay=1, flicker=1, ownerColor=1, opacity=0.7)
-    ImageSprite(@assets/ship.png, scale=4, ownerColor=0.5, shading=0.3)
+    ImageSprite<invulnerable>(@assets/ship.png, scale=4, overlay=1, flicker=1, ownerColor=1, luminous=0.2, opacity=0.7)
+    ImageSprite(@assets/ship.png, scale=4, ownerColor=0.2, shading=0.3)
     
     PointerAimingLine(body=ship, layer=4, radius=0.1, color=#ff0000, opacity=0.5, glare=0.5)
-    TextSprite(owner.PlayerName, layer=4, heightPx=22, bodyOffset=@(0, 4), anchorTop=true, noRotation=true, ownerColor=true, opacity=0.5)
+    // TextSprite(owner.PlayerName, layer=4, heightPx=22, bodyOffset=@(0, 4), anchorTop=true, noRotation=true, ownerColor=true, opacity=0.5)
     
     LimitSpeed(maxSpeed=SHIP_MAX_SPEED)
     DecayTurnRate(SHIP_DECAY_TURN)
@@ -159,7 +161,7 @@ pub fn ship.Ship([owner]) {
 }
 
 fn ship.Fire {
-    const angle = 0.03rev
+    const angle = 0.02rev
     let initial = -(angle * (LaserCount - 1)) / 2
     for index in Range(0, LaserCount) {
         Spawn weapon {
@@ -170,6 +172,7 @@ fn ship.Fire {
     if(LaserCount > 3) {
         Hear(@assets/basic_laser3.mp3)
     } else {
+        // Hear(@assets/laser1.mp3)
         surprise {
             Hear(@assets/basic_laser.mp3),
             Hear(@assets/basic_laser2.mp3),
@@ -189,7 +192,7 @@ fn ship.Propel<Path> (direction, [body, owner]) {
     // ApplyTurningImpulse(impulse)
     behavior<Path+thrust> on BeforePhysics {
         delete behavior<Path+brake>
-        let impulse = TurboOn ? SHIP_TURBO : SHIP_PROPEL
+        let impulse = TurboOn ? TurboRate : PropelRate
         ApplyImpulse(impulse * direction)
         Heading = Angle(Pointer - Pos)
     }

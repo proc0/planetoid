@@ -4,6 +4,7 @@ pub symbol HealthPickup
 pub symbol EnergyShield
 pub symbol MultiLaser
 pub symbol AddFireRate
+pub symbol UpgradeThruster
 
 signal powerup.NearShip
 
@@ -13,20 +14,35 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     use speed=10
     use luminous=1
 
-    const BG_COLOR = #00ffaa
     
     Body(pos=, velocity=@(Random, speed*Random))
     PolygonCollider(shape=Circle, category=Category:Powerup, collideWith=Category:None, sense=Category:Ship, density=1)
 
-    PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, opacity=0.5)
+    let shape = Circle
+    let bgColor = #00ffaa
     if type == EnergyShield {
         ImageSprite(@shield.svg, radius=1, shading=0.5, shadow=0.5)
-    } else if type == MultiLaser {
-        ImageSprite(@triblast.svg, radius=1, shading=0.5, shadow=0.5)
+        bgColor = #0033ee
+        PolygonSprite(shape=, color=bgColor, bloom=3, opacity=0.5)
     } else if type == HealthPickup {
         ImageSprite(@cross.svg, radius=1, shading=0.5, shadow=0.5)
+        bgColor = #10cb48
+        PolygonSprite(shape=Circle, color=bgColor, bloom=3, opacity=0.5)
+    } else if type == UpgradeThruster {
+        ImageSprite(@cross.svg, radius=1, shading=0.5, shadow=0.5)
+        bgColor = #e8de09
+        shape = Equilateral(numPoints=4, radius=1.4, angle=0.8)
+        PolygonSprite(shape=, color=bgColor, bloom=3, opacity=0.5)
+    } else if type == MultiLaser {
+        ImageSprite(@triblast.svg, radius=1, shading=0.5, shadow=0.5)
+        shape = Equilateral(numPoints=3, radius=1.1, angle=-Pi/2)
+        bgColor = #ccc410
+        PolygonSprite(shape=, color=bgColor, bloom=3, opacity=0.5)
     } else if type == AddFireRate {
         ImageSprite(@firerate.svg, radius=1, shading=0.5, shadow=0.5)
+        shape = Equilateral(numPoints=3, radius=1.1, angle=-Pi/2)
+        bgColor = #ccc410
+        PolygonSprite(shape=, color=bgColor, bloom=3, opacity=0.5)
     }
     
     RecoverSpeed
@@ -56,16 +72,23 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
                 } else {
                     ship.Energy += POWERUP_SHIELD_ENERGY
                 }
+            } else if type == HealthPickup {
+                ship.Health += POWERUP_HEALTH_PICKUP
+                if ship.Health > SHIP_HEALTH {
+                    ship.Health = SHIP_HEALTH
+                }
+            } else if type == UpgradeThruster {
+                ship.PropelRate += 0.5
+                ship.TurboRate += 1
+                if ship.PropelRate > SHIP_MAX_PROPEL || ship.TurboRate > SHIP_MAX_TURBO {
+                    ship.PropelRate = SHIP_MAX_PROPEL
+                    ship.TurboRate = SHIP_MAX_TURBO
+                }
             } else if type == MultiLaser {
                 ship.Subspawn {
                     if ship.LaserCount < SHIP_MAX_LASERS {
                         ship.LaserCount = ship.LaserCount + 1
                     }
-                }
-            } else if type == HealthPickup {
-                ship.Health += POWERUP_HEALTH_PICKUP
-                if ship.Health > SHIP_HEALTH {
-                    ship.Health = SHIP_HEALTH
                 }
             } else if type == AddFireRate {
                 if ship.FireRate >= SHIP_MAX_FIRERATE && ship.FireRate - POWERUP_FIRERATE > SHIP_MAX_FIRERATE {
@@ -79,7 +102,7 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
     }
 
     once Tick(POWERUP_LIFETIME-3s) {
-        PolygonSprite(shape=Circle, color=BG_COLOR, bloom=3, flicker=1, opacity=0.5, shadow=0.5)
+        PolygonSprite(shape=, color=bgColor, bloom=3, flicker=1, opacity=0.5, shadow=0.5)
     }
     
     once Tick(POWERUP_LIFETIME) { Expire }

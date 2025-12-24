@@ -23,7 +23,7 @@ pub fn asteroid.Asteroid(radius=RandomRange(2.5,5), pos=RandomSpawnTopPos(4), sp
         @assets/asteroid6.svg,
         @assets/asteroid7.svg,
     ])
-    ImageSprite(asteroidSprite, shading=0.25, shadow=0, color=color.Darken(Random - 0.6))
+    ImageSprite(asteroidSprite, shading=0.25, shadow=0, color=color.Darken(Random - 0.8))
     
     RecoverSpeed
     DespawnBounds

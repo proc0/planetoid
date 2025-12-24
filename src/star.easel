@@ -7,7 +7,7 @@ pub fn star.Star(radius=Random/3+0.1, pos=RandomSpawnPos) {
     const blink = Random*3s + 0.5s
     const dissipate = blink - 0.5s
     
-    Body(pos=, velocity=@(0,0.5))
+    Body(pos=, velocity=@(0,0.8))
     PolygonSprite(shape=Circle, feather=radius+0.3, bloom=1, shine=0.3, luminous=0.5)
     
     on Tick(blink) {
