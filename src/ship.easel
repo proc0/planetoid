@@ -128,15 +128,13 @@ pub fn ship.Ship([owner]) {
             DisplayHealth
             
             if Health <= 0 {
-                Hear(@assets/explosion1.mp3)
-    
                 Transmission(audience=Audience:All) {
                     P { 
                         PlayerNameDisplay
                         " was destroyed."
                     }
                 }
-                
+                Explode
                 Expire
                 break
             }
@@ -154,10 +152,6 @@ pub fn ship.Ship([owner]) {
             }
         }
     }
-
-    once BeforeDespawn {
-        Explode
-    }
 }
 
 fn ship.Fire {
@@ -170,13 +164,13 @@ fn ship.Fire {
     }
 
     if(LaserCount > 3) {
-        Hear(@assets/basic_laser3.mp3)
+        Hear(@effects/laser.esfx)
     } else {
-        // Hear(@assets/laser1.mp3)
-        surprise {
-            Hear(@assets/basic_laser.mp3),
-            Hear(@assets/basic_laser2.mp3),
-        }
+        Hear(@effects/laser.esfx)
+        // surprise {
+        //     Hear(@assets/basic_laser.mp3),
+        //     Hear(@assets/basic_laser2.mp3),
+        // }
     }
 }
 

@@ -1,0 +1,24 @@
+Play(duration=0.2s, cutoff=0.15s) {
+    Vibrato(freqModulation=-1200) {
+        Oscillator(wave=$triangle, freq=5)
+    }
+    Vibrato(freqModulation=400) {
+        WhiteNoise
+    }
+    Oscillator(wave=$triangle, freq=[1400, 100])
+    Envelope(attack=0.01s, sustain=0.03s, release=0.04s)
+    // Peaking(freq=1800, q=1, db=-6)
+    LowPass(freq=[1800, 1000])
+    HighPass(freq=500)
+    Gain(volume=0.1)
+}
+
+// NOTE: waka waka
+// Vibrato(freqModulation=-2700) {
+//     Oscillator(wave=$sine, freq=1)
+// }
+// Vibrato(freqModulation=1500) {
+//     WhiteNoise
+// }
+// Oscillator(wave=$triangle, freq=[2800, 1000])
+// Envelope(attack=0.01s, sustain=0.2s)
