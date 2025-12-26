@@ -35,7 +35,7 @@ pub fn asteroid.Asteroid(radius=RandomRange(2.5,5), pos=RandomSpawnTopPos(4), sp
         const MaxGenerations = 2
         if Health <= 0 {
             repeat 15 { Spark(radius=radius*5, bodyOffset=Direction(that.Velocity)*-radius, feather=1, taper=0.1, layer=7, color=#333333, shine=0, splatter=1, dissipate=2s, radius=Random, velocity=Velocity*Direction(that.Velocity)*-1) }
-            
+            Hear(@assets/rocksplit.mp3, volume=1/generation)
             Expire
             if generation < MaxGenerations {
                 let parent = asteroid

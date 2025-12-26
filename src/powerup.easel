@@ -29,10 +29,9 @@ pub fn powerup.Powerup(pos=@(0,0), type) {
         bgColor = #10cb48
         PolygonSprite(shape=Circle, color=bgColor, bloom=3, opacity=0.5)
     } else if type == UpgradeThruster {
-        ImageSprite(@cross.svg, radius=1, shading=0.5, shadow=0.5)
+        ImageSprite(@thruster.svg, radius=1, shading=0.5, shadow=0.5, scale=1.1)
         bgColor = #e8de09
-        shape = Equilateral(numPoints=4, radius=1.4, angle=0.8)
-        PolygonSprite(shape=, color=bgColor, bloom=3, opacity=0.5)
+        PolygonSprite(shape=Circle, color=bgColor, bloom=3, opacity=0.5)
     } else if type == MultiLaser {
         ImageSprite(@triblast.svg, radius=1, shading=0.5, shadow=0.5)
         shape = Equilateral(numPoints=3, radius=1.1, angle=-Pi/2)

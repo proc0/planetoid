@@ -1,0 +1,10 @@
+Play(duration=2s) {
+    Vibrato(freqModulation=1400) {
+        WhiteNoise
+    }
+    BandPass(freq=[120,30], q=[1,5])
+    WhiteNoise
+    Oscillator(wave=$sawtooth, freq=120)
+    LowPass(freq=40)
+    Gain(volume=0.8)
+}

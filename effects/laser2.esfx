@@ -1,0 +1,12 @@
+Play(duration=0.05s) {
+    Oscillator(wave=$triangle, freq=[850, 50])
+    Envelope(attack=0.01s, sustain=0.03s, release=0.05s)
+    Delay(duration=0.04s)
+    Vibrato(freqModulation=60) {
+        Oscillator(wave=$sawtooth, freq=3)
+    }
+    Oscillator(wave=$sine, freq=60)
+    HighPass(freq=200)
+    LowPass(freq=800)
+    Gain(volume=0.3)
+}

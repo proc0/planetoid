@@ -15,7 +15,11 @@ pub fn RandomRange(floor, ceiling) -> Number {
 }
 
 pub fn this.Explode([body, radius]) {
-    Hear(@effects/explode.esfx)
+    surprise {
+        Hear(@effects/explode1.esfx),
+        Hear(@effects/explode2.esfx),
+        Hear(@effects/explode3.esfx)
+    }
     repeat 8 {
         Spark(body, radius=radius*3, color=#ffcc55, layer=8, glare=0.1, splatter=1, speed=20, dissipate=1s, luminous=1, bloom=1, feather=0.8, taper=0.7)
     }

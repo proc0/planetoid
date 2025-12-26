@@ -1,8 +1,13 @@
-Play(duration=1.5s, delay=0.5s, cutoff=0.5s) {
+Play(duration=5s) {
+    Vibrato(freqModulation=50) {
+        WhiteNoise
+    }
+    BandPass(freq=[120,30], q=[1,5])
+    // Oscillator(wave=$sine, freq=100)
     BrownNoise
-    BandPass(freq=[220,330], q=[1,5])
-    Envelope(attack=0.25s, release=0.5s)
-
+    LowPass(freq=80)
+    // Envelope(attack=0.25s, release=0.5s)
+    Gain(volume=0.1)
 }
 
 // Play {

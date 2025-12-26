@@ -9,14 +9,14 @@ pub fn beltoid.Beltoid {
 
     repeat count {
         Spawn asteroid {
-            Asteroid(radius=RandomRange(0.5,3), pos=RandomSpawnPos, speed=Random*0.1, velocity=@(0,-0.01), collides=false, health=50*RandomRange(2.5,5), dissipate=0.75s, color=#111111) 
+            Asteroid(radius=RandomRange(0.5,3), pos=RandomSpawnPos, speed=Random*0.5, velocity=@(0.04*PickRandom([-1,1]),-0.04), collides=false, health=50*RandomRange(2.5,5), dissipate=0.75s, color=#111111) 
         }
     }
     
     with Tick(15s) {
         Spawn asteroid { 
             const radius = RandomRange(0.5,3)
-            Asteroid(radius=, pos=RandomSpawnBottomPos, speed=Random*0.1, velocity=@(0,-0.01), collides=false, health=50*RandomRange(2.5,5), dissipate=0.75s, color=#111111) 
+            Asteroid(radius=, pos=RandomSpawnBottomPos, speed=Random*0.5, velocity=@(0.04*PickRandom([-1,1]),-0.04), collides=false, health=50*RandomRange(2.5,5), dissipate=0.75s, color=#111111) 
         }
     }
 }

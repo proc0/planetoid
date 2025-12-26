@@ -31,5 +31,6 @@ pub fn projectile.Bomb(ship, target) {
         Spawn explosion {
             Explosion(pos=Pos)
         }
+        Hear(@effects/explode_small.esfx)
     }
 }

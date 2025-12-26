@@ -50,10 +50,12 @@ pub fn ship.Ship([owner]) {
 
     on ButtonDown(KeyShiftLeft) {
         TurboOn = true
+        Sing<rumble>(@effects/thruster.esfx)
     }
 
     on ButtonUp(KeyShiftLeft) {
         TurboOn = false
+        delete Sing<rumble>
     }
     
     on ButtonDown(ArrowUp), ButtonDown(KeyW) {
@@ -162,15 +164,15 @@ fn ship.Fire {
             Laser(source=ship, offset=initial + index * angle)
         }
     }
-
+    
     if(LaserCount > 3) {
-        Hear(@effects/laser.esfx)
+        Hear(@effects/multilaser.esfx)
     } else {
-        Hear(@effects/laser.esfx)
-        // surprise {
-        //     Hear(@assets/basic_laser.mp3),
-        //     Hear(@assets/basic_laser2.mp3),
-        // }
+        surprise {
+            Hear(@effects/laser1.esfx),
+            Hear(@effects/laser2.esfx),
+            Hear(@effects/laser3.esfx)
+        }
     }
 }
 

@@ -1,8 +1,8 @@
 pub const LEVEL_START = 1
 
 pub const SHIP_HEALTH = 80
-pub const SHIP_PROPEL = 1
-pub const SHIP_TURBO = 2
+pub const SHIP_PROPEL = 2
+pub const SHIP_TURBO = 3
 pub const SHIP_MAX_PROPEL = 4
 pub const SHIP_MAX_TURBO = 8
 pub const SHIP_BRAKE = 0.2
