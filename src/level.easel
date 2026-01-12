@@ -65,7 +65,8 @@ pub fn this.Level1([owner]) {
             Spawn ship {
                 // surprise {
                 // }
-                    EnemyFighter(ship)
+                EnemyDrone(ship)
+                ShotgunBomb(ship)
                 BehaveCatious(ship, ship.speed)
 
                 // once BeforeDespawn {

@@ -102,14 +102,26 @@ pub fn ship.Enemy(
 
     Heading = HALF_PI 
 
-    on Tick(fireRate) {
-        let hero = QueryNearest(filter=Category:Ship)
-        if hero {
-            Spawn projectile {
-                Bomb(ship=, target=hero.Pos)
-            }
-        }
-    }
+    // on Tick(fireRate) {
+
+    //     if type == Drone {
+    //         const angle = 0.02rev
+    //         let initial = -(angle * (5 - 1)) / 2
+    //         for index in Range(0, 5) {
+    //             Spawn projectile {
+    //                 Shotgun(source=ship, offset=initial + index * angle)
+    //             }
+    //         }
+    //     } else if type == Fighter {
+    //         let hero = QueryNearest(filter=Category:Ship)
+    //         if hero {
+    //             Spawn projectile {
+    //                 // Bomb(ship=, target=hero.Pos)
+    //                 Cannon(source=ship)
+    //             }
+    //         }
+    //     }
+    // }
 
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Weapon | Category:Asteroid) {
