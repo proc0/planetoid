@@ -65,9 +65,11 @@ pub fn this.Level1([owner]) {
             Spawn ship {
                 // surprise {
                 // }
-                EnemyDrone(ship)
-                ShotgunBomb(ship)
-                BehaveCatious(ship, ship.speed)
+                EnemyLeader(ship)
+                // if ship.state == StateHold {
+                //     ShotgunBomb(ship)
+                // }
+                RoleCatious(ship, ship.speed)
 
                 // once BeforeDespawn {
                 //     World.BeginLevel(2)

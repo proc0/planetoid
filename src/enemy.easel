@@ -5,79 +5,10 @@ pub symbol Fighter
 pub symbol Leader
 pub symbol None
 
-pub symbol StrategyCautious
-pub symbol StrategyAggressive
-
-symbol StateApproach
-symbol StateHold
-symbol StateAvoid
-symbol StateRealign
-
-prop ship.State
-
-fn this.ChangeState(currentState, nextState) -> symbol {
-    let resultState = nextState
-    if nextState == StateHold {
-        resultState = nextState
-    } else if currentState == StateAvoid || currentState == StateApproach {
-        resultState = currentState
-    }
-    return resultState
-}
-
-pub fn this.BehaveCatious(body, speed=3) {
-        let lastDetectedPos = @(0,0)
-        behavior on Tick(5) {
-            let hero = QueryNearest(filter=Category:Ship)
-            if !hero { 
-                Heading = HALF_PI
-                Velocity = @(0, 4)
-                break 
-            }
-
-            Heading = lastDetectedPos - body.Pos
-            if lastDetectedPos != hero.Pos {
-                let nextDetectedPos = lastDetectedPos.Towards(hero.Pos, 1)
-                lastDetectedPos = nextDetectedPos == 1 ? hero.Pos : nextDetectedPos
-            }
-        }
-
-        behavior on Tick(20) {
-            let hero = QueryNearest(filter=Category:Ship)
-            if !hero { break }
-            
-            let distanceFromHero = Distance(body.Pos, hero.Pos).Abs
-            if lastDetectedPos == @(0, 0) {
-                lastDetectedPos = Direction(hero.Pos - body.Pos)
-                Heading = hero.Pos - body.Pos
-            }
-
-            if distanceFromHero > 40 && body.state != StateApproach {
-                body.state = ChangeState(body.state, StateApproach)
-                body.ApplyImpulse(Direction(lastDetectedPos)*155)
-            } else if distanceFromHero < 30 && body.state != StateAvoid {
-                body.state = ChangeState(body.state, StateAvoid)
-                body.ApplyImpulse(Direction(hero.Pos - body.Pos)*-155)
-            } else if distanceFromHero > 30 && distanceFromHero < 40 {
-                body.state = ChangeState(body.state, StateHold)
-                body.Velocity = @(0, 0)
-            }
-        }
-}
-
-pub fn ship.Enemy(
-    type=None, 
-    pos=RandomSpawnTopPos,
-    health=1,
-    fireRate=2s,
-    killScore=50,
-    dropRate=0.3,
-    strategy=StrategyCautious,
-    [owner]) {
+pub fn ship.Enemy(type=None, pos=RandomSpawnTopPos, health=1, fireRate=2s, killScore=50, dropRate=0.3, [owner]) {
     use body = ship
     use radius = 1
     use layer = 5
-    let state = StateApproach
     
     Health = health
     
@@ -88,11 +19,11 @@ pub fn ship.Enemy(
     PolygonCollider(shape=Circle(3), category=Category:Enemy, density=1)
 
     if type == Drone {
-        ImageSprite(@assets/enemy_fighter.png, color=#ee1111, shading=0.3, shadow=0, scale=4.5)
+        ImageSprite(@assets/enemy_drone.png, shading=0.3, shadow=0, scale=4.5)
     } else if type == Fighter {
         ImageSprite(@assets/enemy_fighter.png, shading=0.3, shadow=0, scale=4.5)
     } else if type == Leader {
-        ImageSprite(@assets/enemy_fighter.png, color=#eeee11, shading=0.3, shadow=0, scale=4)   
+        ImageSprite(@assets/enemy_leader.png, shading=0.3, shadow=0, scale=4)   
     } else {
         PolygonSprite(shape=Circle, color=#ff0000)        
     }
@@ -101,27 +32,6 @@ pub fn ship.Enemy(
     DespawnBoundsY
 
     Heading = HALF_PI 
-
-    // on Tick(fireRate) {
-
-    //     if type == Drone {
-    //         const angle = 0.02rev
-    //         let initial = -(angle * (5 - 1)) / 2
-    //         for index in Range(0, 5) {
-    //             Spawn projectile {
-    //                 Shotgun(source=ship, offset=initial + index * angle)
-    //             }
-    //         }
-    //     } else if type == Fighter {
-    //         let hero = QueryNearest(filter=Category:Ship)
-    //         if hero {
-    //             Spawn projectile {
-    //                 // Bomb(ship=, target=hero.Pos)
-    //                 Cannon(source=ship)
-    //             }
-    //         }
-    //     }
-    // }
 
     on BeforeCollide that {
         if that.Category.Overlaps(Category:Weapon | Category:Asteroid) {
@@ -149,13 +59,34 @@ pub fn ship.Enemy(
                 }
                 
                 if Random > 1-dropRate {
-                    Spawn powerup {
-                        surprise {                
-                            0.3 => Powerup(pos=Pos, type=EnergyShield),
-                            0.2 => Powerup(pos=Pos, type=MultiLaser),
-                            0.3 => Powerup(pos=Pos, type=HealthPickup),
-                            0.1 => Powerup(pos=Pos, type=AddFireRate),
-                            0.1 => Powerup(pos=Pos, type=UpgradeThruster),
+                    if type == Drone {
+                        Spawn powerup {
+                            surprise {                
+                                0.3 => Powerup(pos=Pos, type=HealthPickup),
+                            }
+                        }
+                    } else if type == Fighter {
+                        Spawn powerup {
+                            surprise {                
+                                0.3 => Powerup(pos=Pos, type=MultiLaser),
+                                0.3 => Powerup(pos=Pos, type=AddFireRate),
+                                0.1 => Powerup(pos=Pos, type=UpgradeThruster),
+                            }
+                        }
+                    } else if type == Leader {
+                        Spawn powerup {
+                            surprise {                
+                                0.5 => Powerup(pos=Pos, type=EnergyShield),
+                                0.5 => Powerup(pos=Pos, type=HealthPickup),
+                            }
+                        }
+                        
+                        Spawn powerup {
+                            surprise {                
+                                0.3 => Powerup(pos=Pos, type=MultiLaser),
+                                0.3 => Powerup(pos=Pos, type=AddFireRate),
+                                0.3 => Powerup(pos=Pos, type=UpgradeThruster),
+                            }
                         }
                     }
                 }
