@@ -34,6 +34,9 @@ pub fn this.Level0 {
     }
 }
 
+signal this.EndAsteroids
+signal this.FirstWaveCleared
+
 pub fn this.Level1([owner]) {
 
     // Music(@assets/bgm1.mp3, volume=0.5, loop=true)
@@ -49,8 +52,29 @@ pub fn this.Level1([owner]) {
     once Tick(3s) {
         delete OverlayContent<levelTitle>
     }
+
+    await Tick(3s)
+
+    once Tick(25s) {
+        EndAsteroids
+    }
     
-    with Tick(1s) {
+    behavior<shower> on Tick(1s) {
+        const MaxAsteroids = 10
+        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
+            Spawn asteroid {
+                Asteroid(speed=10*Random+10)
+            }
+        }
+    }
+
+    on EndAsteroids {
+        delete behavior<shower>
+    }
+    
+    await EndAsteroids
+
+    with Tick(3s) {
         const MaxAsteroids = 3
         if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
             Spawn asteroid {
@@ -59,21 +83,28 @@ pub fn this.Level1([owner]) {
         }
     }
 
+    for index in Range(0,3) {
+        let lvl = this
+        Spawn ship {
+            EnemyDrone(ship)
+            RoleCatious(ship)
+            on BeforeDespawn {
+                if QueryCount(filter=Category:Enemy) <= 1 {
+                    lvl.FirstWaveCleared
+                }
+            }
+        }
+    }
+
+    await FirstWaveCleared
+    await Tick(3s)
+    
     with Tick(3s) {
         const MaxEnemies=4
         if QueryCount(filter=Category:Enemy) < MaxEnemies {
             Spawn ship {
-                // surprise {
-                // }
-                EnemyLeader(ship)
-                // if ship.state == StateHold {
-                //     ShotgunBomb(ship)
-                // }
+                EnemyFighter(ship)
                 RoleCatious(ship, ship.speed)
-
-                // once BeforeDespawn {
-                //     World.BeginLevel(2)
-                // }
             }
         }
     }
