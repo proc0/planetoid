@@ -16,13 +16,13 @@ pub const POWERUP_INIT_SHIELD_ENERGY = 27
 pub const POWERUP_SHIELD_ENERGY = 8
 pub const POWERUP_MAGNET_RADIUS = 12
 pub const POWERUP_LIFETIME = 7s
-pub const POWERUP_HEALTH_PICKUP = 3
+pub const POWERUP_HEALTH_PICKUP = 10
 pub const POWERUP_FIRERATE = 0.04s
 pub const POWERUP_SCORE = 150
 
 pub const Settings = {
     "Category:Weapon"={
-        damage = 15
+        damage = 12
     },
     "Category:Projectile"={
         damage = 20

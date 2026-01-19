@@ -36,10 +36,9 @@ pub fn this.Level0 {
 
 signal this.EndAsteroids
 signal this.FirstWaveCleared
+signal this.SecondWaveCleared
 
 pub fn this.Level1([owner]) {
-
-    // Music(@assets/bgm1.mp3, volume=0.5, loop=true)
     
     once Tick {
         OverlayContent<levelTitle> {
@@ -83,7 +82,7 @@ pub fn this.Level1([owner]) {
         }
     }
 
-    for index in Range(0,3) {
+    for index in Range(0,2) {
         let lvl = this
         Spawn ship {
             EnemyDrone(ship)
@@ -98,16 +97,51 @@ pub fn this.Level1([owner]) {
 
     await FirstWaveCleared
     await Tick(3s)
-    
+
+    let totalEnemiesSecondWave = 15
     with Tick(3s) {
         const MaxEnemies=4
+        if QueryCount(filter=Category:Enemy) < MaxEnemies && totalEnemiesSecondWave > 0 {
+            let lvl = this
+            Spawn ship {
+                EnemyDrone(ship)
+                surprise {
+                    RoleCatious(ship, ship.speed),
+                    RoleRanger(ship, ship.speed)
+                }
+
+                on BeforeDespawn {
+                    totalEnemiesSecondWave -= 1
+
+                    if totalEnemiesSecondWave <= 0 {
+                        lvl.SecondWaveCleared
+                    }
+                }
+            }
+        }
+    }
+
+    await SecondWaveCleared
+    await Tick(3s)
+
+    with Tick(3s) {
+        const MaxEnemies=2
         if QueryCount(filter=Category:Enemy) < MaxEnemies {
             Spawn ship {
                 EnemyFighter(ship)
                 RoleCatious(ship, ship.speed)
+
+                // on BeforeDespawn {
+                //     totalEnemiesSecondWave -= 1
+
+                //     if totalEnemiesSecondWave <= 0 {
+                //         lvl.SecondWaveCleared
+                //     }
+                // }
             }
         }
     }
+
 }
 
 pub fn this.Level2 {

@@ -144,7 +144,11 @@ pub fn ship.Ship([owner]) {
             let opacity = 0.7
             behavior<hit> on Paint {            
                 ImageSprite(@assets/ship.png, color=#ff0000, scale=4, opacity=, luminous=0.3)
-                Vignette(color=#ff0000, opacity=opacity-0.3, power=40)
+                if ship.Energy > 0 {
+                    Vignette(color=#a1b1e2, luminous=1, opacity=opacity-0.3, power=40)
+                } else {
+                    Vignette(color=#ff0000, opacity=opacity-0.3, power=40)
+                }
 
                 opacity -= 0.03
             }

@@ -37,10 +37,63 @@ pub fn this.RoleCatious(body, speed=3) {
     behavior on Tick(this.fireRate || 1s) {
         if body.state == StateHold {
             ShotgunBomb(body)
-        } else if body.state == StateApproach {
-            Spawn projectile {
-                Cannon(body)
-            }
+        } 
+        
+        // else if body.state == StateApproach {
+        //     Spawn projectile {
+        //         Cannon(body)
+        //     }
+        // }
+    }
+
+    behavior on Tick(20) {
+        let hero = QueryNearest(filter=Category:Ship)
+        if !hero { 
+            body.state = ChangeState(body.state, StateNeutral)
+            break 
+        }
+        
+        let distanceFromHero = Distance(body.Pos, hero.Pos).Abs
+        if lastDetectedPos == @(0, 0) {
+            lastDetectedPos = Direction(hero.Pos - body.Pos)
+            Heading = hero.Pos - body.Pos
+        }
+
+        if distanceFromHero > 40 && body.state != StateApproach {
+            body.state = ChangeState(body.state, StateApproach)
+            body.ApplyImpulse(Direction(lastDetectedPos)*155)
+        } else if distanceFromHero < 30 && body.state != StateAvoid {
+            body.state = ChangeState(body.state, StateAvoid)
+            body.ApplyImpulse(Direction(hero.Pos - body.Pos)*-155)
+        } else if distanceFromHero > 30 && distanceFromHero < 40 {
+            body.state = ChangeState(body.state, StateHold)
+            body.Velocity = @(0, 0)
+        }
+    }
+}
+
+pub fn this.RoleRanger(body, speed=3) {
+    let lastDetectedPos = @(0,0)
+    behavior on Tick(5) {
+        let hero = QueryNearest(filter=Category:Ship)
+        if !hero { 
+            Heading = HALF_PI
+            Velocity = @(0, 4)
+            body.state = ChangeState(body.state, StateNeutral)
+            break 
+        }
+
+        Heading = lastDetectedPos - body.Pos
+        if lastDetectedPos != hero.Pos {
+            let nextDetectedPos = lastDetectedPos.Towards(hero.Pos, 1)
+            lastDetectedPos = nextDetectedPos == 1 ? hero.Pos : nextDetectedPos
+        }
+
+    }
+
+    behavior on Tick(Random+0.5s) {
+        Spawn projectile {
+            Cannon(body)
         }
     }
 

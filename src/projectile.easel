@@ -1,9 +1,9 @@
 pub tangible category Category:Projectile
 
 pub fn this.ShotgunBomb(body) {
-    const angle = 0.02rev
+    const angle = 0.03rev
     let initial = -(angle * (5 - 1)) / 2
-    for index in Range(0, 5) {
+    for index in Range(0, 8) {
         Spawn projectile {
             Bubble(source=body, offset=initial + index * angle)
         }
