@@ -43,8 +43,6 @@ pub game fn World.Main(maxHumanPlayers=3) {
             }
         }
 
-        Level
-        BeginLevel(LEVEL_START)
         
         once AfterEliminated {
             const scoreTime = "Time " + Time + " | Score " + Score
@@ -67,8 +65,25 @@ pub game fn World.Main(maxHumanPlayers=3) {
         on Tick(TicksPerSecond) {
             Time += 1
         }
-    }
 
+        Level1
+        await EndLevel1
+        Level2
+        await EndLevel2
+        Level3
+        await EndLevel3
+
+        once Tick {
+            OverlayContent<levelTitle> {
+                VStack(align=Align:Center) {
+                    Standout(fontSize=5) { FlyInWords("Thank you for playing!") }
+                    H2 (marginBottom=3) {
+                        "Comment and leave feedback for more levels."
+                    }
+                }
+            }
+        }
+    }
     
     ButtonRemap(Tap, Click)
 }

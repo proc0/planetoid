@@ -1,4 +1,4 @@
-# Planetoid
+# Planetoids
 
 Shoot your way through the asteroid belt and defeat enemies.
 

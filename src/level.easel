@@ -1,18 +1,11 @@
-pub signal this.BeginLevel(count)
 
-pub fn this.Level([owner]) {
-
-    on BeginLevel count {
-        if count == 0 {
-            Level0
-        } else if count == 1 {
-            Level1
-        } else if count == 2 {
-            Level2
-        }
-    }
-
-}
+signal this.EndAsteroids
+signal this.FirstWaveCleared
+signal this.SecondWaveCleared
+signal this.ThirdWaveCleared
+pub signal this.EndLevel1
+pub signal this.EndLevel2
+pub signal this.EndLevel3
 
 pub fn this.Level0 {
     once Tick {
@@ -34,12 +27,7 @@ pub fn this.Level0 {
     }
 }
 
-signal this.EndAsteroids
-signal this.FirstWaveCleared
-signal this.SecondWaveCleared
-
 pub fn this.Level1([owner]) {
-    
     once Tick {
         OverlayContent<levelTitle> {
             VStack(align=Align:Center) {
@@ -52,8 +40,71 @@ pub fn this.Level1([owner]) {
         delete OverlayContent<levelTitle>
     }
 
+    once Tick {
+        CommandBarRight<tutorial>(audience=Audience:All) {
+            VStack(hPadding=10) {            
+                H3 (marginBottom=5) {
+                    "WASD/Arrows: MOVE
+                    Left Click: FIRE
+                    Left Shift: TURBO"
+                }
+            }
+        }
+    }
+    
     await Tick(3s)
 
+    // asteroid belt
+    once Tick(15s) {
+        EndAsteroids
+    }
+    
+    behavior<shower> on Tick(1s) {
+        const MaxAsteroids = 5
+        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
+            Spawn asteroid {
+                Asteroid(speed=8*Random+10)
+            }
+        }
+    }
+
+    on EndAsteroids {
+        delete behavior<shower>
+    }
+    
+    await EndAsteroids
+
+    for index in Range(0,2) {
+        let lvl = this
+        Spawn ship {
+            EnemyDrone(ship)
+            RoleCatious(ship)
+            on BeforeDespawn {
+                if QueryCount(filter=Category:Enemy) <= 1 {
+                    lvl.EndLevel1
+                }
+            }
+        }
+    }
+}
+
+pub fn this.Level2([owner]) {
+    
+    once Tick {
+        OverlayContent<levelTitle> {
+            VStack(align=Align:Center) {
+                Standout(fontSize=5) { FlyInWords("Level 2") }
+            }
+        }
+    }
+    
+    once Tick(3s) {
+        delete OverlayContent<levelTitle>
+    }
+
+    await Tick(3s)
+
+    // asteroid belt
     once Tick(25s) {
         EndAsteroids
     }
@@ -73,6 +124,7 @@ pub fn this.Level1([owner]) {
     
     await EndAsteroids
 
+    // first wave
     with Tick(3s) {
         const MaxAsteroids = 3
         if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
@@ -98,6 +150,7 @@ pub fn this.Level1([owner]) {
     await FirstWaveCleared
     await Tick(3s)
 
+    // second wave
     let totalEnemiesSecondWave = 15
     with Tick(3s) {
         const MaxEnemies=4
@@ -124,36 +177,163 @@ pub fn this.Level1([owner]) {
     await SecondWaveCleared
     await Tick(3s)
 
+    // third wave
+    let totalEnemiesThirdWave = 4
     with Tick(3s) {
         const MaxEnemies=2
         if QueryCount(filter=Category:Enemy) < MaxEnemies {
+            let lvl = this
             Spawn ship {
                 EnemyFighter(ship)
                 RoleCatious(ship, ship.speed)
 
-                // on BeforeDespawn {
-                //     totalEnemiesSecondWave -= 1
+                on BeforeDespawn {
+                    totalEnemiesThirdWave -= 1
 
-                //     if totalEnemiesSecondWave <= 0 {
-                //         lvl.SecondWaveCleared
-                //     }
-                // }
+                    if totalEnemiesThirdWave <= 1 {
+                        lvl.EndLevel2
+                    }
+                }
             }
         }
     }
-
 }
 
-pub fn this.Level2 {
+pub fn this.Level3([owner]) {
     once Tick {
-        OverlayContent<level2Title> {
+        OverlayContent<levelTitle> {
             VStack(align=Align:Center) {
-                Standout(fontSize=5) { FlyInWords("Level 2") }
+                Standout(fontSize=5) { FlyInWords("Level 3") }
             }
         }
     }
 
     once Tick(3s) {
-        delete OverlayContent<level2Title>
+        delete OverlayContent<levelTitle>
+    }
+
+    await Tick(3s)
+
+    // asteroid belt
+    once Tick(25s) {
+        EndAsteroids
+    }
+    
+    behavior<shower> on Tick(1s) {
+        const MaxAsteroids = 12
+        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
+            Spawn asteroid {
+                Asteroid(speed=12*Random+10)
+            }
+        }
+    }
+
+    on EndAsteroids {
+        delete behavior<shower>
+    }
+    
+    await EndAsteroids
+
+    // first wave
+    with Tick(3s) {
+        const MaxAsteroids = 2
+        if QueryCount(filter=Category:Asteroid) < MaxAsteroids {
+            Spawn asteroid {
+                Asteroid
+            }
+        }
+    }
+
+    for index in Range(0,5) {
+        let lvl = this
+        Spawn ship {
+            EnemyDrone(ship)
+            RoleCatious(ship)
+            on BeforeDespawn {
+                if QueryCount(filter=Category:Enemy) <= 1 {
+                    lvl.FirstWaveCleared
+                }
+            }
+        }
+    }
+
+    await FirstWaveCleared
+    await Tick(3s)
+
+    // second wave
+    let totalEnemiesSecondWave = 15
+    with Tick(3s) {
+        const MaxEnemies=5
+        if QueryCount(filter=Category:Enemy) < MaxEnemies && totalEnemiesSecondWave > 0 {
+            let lvl = this
+            Spawn ship {
+                EnemyDrone(ship)
+                surprise {
+                    RoleCatious(ship, ship.speed),
+                    RoleRanger(ship, ship.speed)
+                }
+
+                on BeforeDespawn {
+                    totalEnemiesSecondWave -= 1
+
+                    if totalEnemiesSecondWave <= 0 {
+                        lvl.SecondWaveCleared
+                    }
+                }
+            }
+        }
+    }
+
+    await SecondWaveCleared
+    await Tick(3s)
+
+    // second wave
+    let totalEnemiesThirdWave = 15
+    with Tick(3s) {
+        const MaxEnemies=4
+        if QueryCount(filter=Category:Enemy) < MaxEnemies && totalEnemiesThirdWave > 0 {
+            let lvl = this
+            Spawn ship {
+                surprise {
+                     0.7 => EnemyDrone(ship),
+                     0.3 => EnemyFighter(ship)
+                }
+                surprise {
+                    RoleCatious(ship, ship.speed),
+                    RoleRanger(ship, ship.speed)
+                }
+
+                on BeforeDespawn {
+                    totalEnemiesThirdWave -= 1
+
+                    if totalEnemiesThirdWave <= 0 {
+                        lvl.ThirdWaveCleared
+                    }
+                }
+            }
+        }
+    }
+
+    await ThirdWaveCleared
+    await Tick(3s)
+
+    let totalEnemiesFourthWave = 16
+    with Tick(2s) {
+        const MaxEnemies=2
+        if QueryCount(filter=Category:Enemy) < MaxEnemies {
+            let lvl = this
+            Spawn ship {
+                EnemyLeader(ship)
+                RoleRanger(ship, ship.speed)
+
+                on BeforeDespawn {
+                    totalEnemiesFourthWave -= 1
+
+                    if totalEnemiesFourthWave <= 0 {
+                        lvl.EndLevel3
+                    }
+                }
+            }
+        }
     }
 }
